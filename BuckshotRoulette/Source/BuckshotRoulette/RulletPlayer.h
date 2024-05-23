@@ -29,10 +29,16 @@ public:
 	UPROPERTY(EditAnywhere, Category="MySettings")
 	class UStaticMeshComponent* playerMesh;
 
-	UPROPERTY(EditAnywhere, Category = "MySettings")
-	class UStaticMeshComponent* playerHandMesh;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class UCameraComponent* CameraComp;
+
+	void TakeHeadDamage();
+
+	void UnvisibleHead();
+
+	void VisibleHead();
+
+
 
 };

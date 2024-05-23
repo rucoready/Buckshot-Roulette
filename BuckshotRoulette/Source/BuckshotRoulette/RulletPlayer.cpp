@@ -16,12 +16,8 @@ ARulletPlayer::ARulletPlayer()
 	playerMesh->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
 	playerMesh->SetRelativeLocation(FVector(0,10,120));
 	playerMesh->SetWorldScale3D(FVector(0.5f));
+	
 
-	playerHandMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerHandMesh"));
-	playerHandMesh->SetupAttachment(GetMesh());
-	playerHandMesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
-	playerHandMesh->SetRelativeLocation(FVector(60.0f, 0.0f, 50.0f));
-	playerHandMesh->SetWorldScale3D(FVector(0.5f));
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> Player(TEXT("/Script/Engine.StaticMesh'/Game/Assets/Player/PlayerHead.PlayerHead'"));
 	if (Player.Succeeded())
@@ -30,12 +26,6 @@ ARulletPlayer::ARulletPlayer()
 	}
 
 
-
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> PlayerHand (TEXT("/Script/Engine.StaticMesh'/Game/Assets/Player/PlayerHands.PlayerHands'"));
-	if (PlayerHand.Succeeded())
-	{
-		playerHandMesh->SetStaticMesh(PlayerHand.Object);
-	}
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(RootComponent);
@@ -63,4 +53,23 @@ void ARulletPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+
+void ARulletPlayer::TakeHeadDamage()
+{
+	
+	
+}
+
+void ARulletPlayer::UnvisibleHead()
+{
+	playerMesh->SetVisibility(false);
+}
+
+
+void ARulletPlayer::VisibleHead()
+{
+	playerMesh->SetVisibility(true);
+}
+
+
 
