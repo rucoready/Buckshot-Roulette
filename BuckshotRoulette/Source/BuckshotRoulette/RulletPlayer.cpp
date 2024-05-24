@@ -4,6 +4,7 @@
 #include "RulletPlayer.h"
 #include "Components/StaticMeshComponent.h"
 #include "Camera/CameraComponent.h"
+#include "RulletPlayerHands.h"
 
 // Sets default values
 ARulletPlayer::ARulletPlayer()
@@ -30,6 +31,9 @@ ARulletPlayer::ARulletPlayer()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(RootComponent);
 	CameraComp->SetRelativeLocation(FVector(0, 0, 50));
+
+	hands = Cast<ARulletPlayerHands>(GetOwner());
+	
 	
 }
 
@@ -45,6 +49,8 @@ void ARulletPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+	//PlayerHitByBuckshot();
 }
 
 // Called to bind functionality to input
@@ -66,10 +72,37 @@ void ARulletPlayer::UnvisibleHead()
 }
 
 
-void ARulletPlayer::VisibleHead()
-{
-	playerMesh->SetVisibility(true);
-}
+// void ARulletPlayer::VisibleHead()
+// {
+// 	playerMesh->SetVisibility(true);
+// }
+// 
+// void ARulletPlayer::PlayerHitByBuckshot()
+// {
+// 	//만약에 피격당해서 bPlayerHit가 True 로 변경된다면
+//  	if (bPlayerHit)
+//  	{
+// 		//샷건에 피격당하면 시야에서 사라진다
+// 		playerMesh->SetVisibility(false);
+// 
+// 		//RulletPlayerHand를 사라지게하고 타이머를 돌게한다
+// 		if (!bHandNoneShow)
+// 		{
+// 			hands->Disappear();
+// 			//Disappear함수안에는 타이머가 존재하기때문에 한번만 실행한다
+// 			bHandNoneShow = true;
+// 		}
+// 		
+// 		//RulletPlayerHands의 HitAction함수가 실행이된다 < 플레이어의 손을 움직인다 >
+// 		hands->HitAction();
+// 
+// 	}
+// 	
+// 
+// 	
+// 
+// 	
+// }
 
 
 

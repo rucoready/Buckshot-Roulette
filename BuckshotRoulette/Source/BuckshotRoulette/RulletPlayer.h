@@ -29,16 +29,22 @@ public:
 	UPROPERTY(EditAnywhere, Category="MySettings")
 	class UStaticMeshComponent* playerMesh;
 
-
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class UCameraComponent* CameraComp;
+
+	UPROPERTY()
+	class ARulletPlayerHands* hands;
 
 	void TakeHeadDamage();
 
 	void UnvisibleHead();
 
-	void VisibleHead();
+	//void VisibleHead();
 
+	//void PlayerHitByBuckshot();
 
+	bool bPlayerHit = false;
+
+	bool bHandNoneShow = false;
 
 };

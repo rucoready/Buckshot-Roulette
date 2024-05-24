@@ -15,12 +15,6 @@ public:
 	// Sets default values for this actor's properties
 	ARulletPlayerHands();
 
-	UPROPERTY(EditAnywhere, Category = "MySettings")
-	class UStaticMeshComponent* playerHandMesh;
-
-	UPROPERTY(EditAnywhere, Category = "MySettings")
-	class USceneComponent* sceneComp;
-
 
 
 protected:
@@ -31,13 +25,21 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	//손이 X축방향으로 앞으로 나가는 함수
 	void MoveForwardHand();
+
+	//손이 X축의 반대방향으로 돌아오는 함수
+	void MoveBackwardHand();
+
+	void MoveOriginRotation();
 
 	void HitAction();
 
 	void Disappear();
 
 	void Leanforward();
+
+	void LeanBackward();
 
 	void UnvisibleHand();
 
@@ -47,15 +49,63 @@ public:
 
 	void mesureRotator();
 
+	void GoOriginLocation();
+
+	void GoOriginRotation();
+
 	void PrintActorCurrentLocation();
 
 	void PrintActorCurrentRotation();
+
+	void ResetbOnceTimerBack();
 
 	bool bHitShootgun = false;
 
 	bool bReShow = false;
 
+	bool bStartBack = false;
+
+	bool bOnceTimerBack = false;
+
+	bool b1 = false;
+
+	bool bGoOriginLocation = false;
+
+	bool bGoOriginRotation = false;
+
+	bool bHandDown = false;
+
+	bool bTimerTriggered;
+
+	bool bTimerTriggered2;
+
+	bool bTimerTriggered3;
+
+	bool bHandDownMoveFinish = false;
+
+	FTimerHandle Timerhandle_Show;
+
+	FTimerHandle Timerhandle_StartMove;
+
+	FTimerHandle Timerhandle_LeanBackward;
+
+	FTimerHandle Timerhandle_StopHandle;
+
+	FTimerHandle Timerhandle_Test1;
+
+	FTimerHandle Timerhandle_BackMove;
+
+	FTimerHandle Timerhandle_BackRotation;
+
+	FRotator CurrentRotation;
+
+	FRotator handOriginRotator;
+
 	FVector CurrentLocation;
+
+	FVector handOriginLocationVector;
+
+	FVector handAfterLocationVector;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	FVector HandMoveVector = FVector(200, 0, 0);
@@ -66,16 +116,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	float PitchValue;
 
-	FRotator CurrentRotation;
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UStaticMeshComponent* playerHandMesh;
 
-	FTimerHandle Timerhandle_Show;
-
-	FTimerHandle Timerhandle_StartMove;
-
-
-	float handLeanSpeed = 1.0f;
-
-	FVector handOriginLocationVector;
-
-	FVector handAfterLocationVector;
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USceneComponent* sceneComp;
 };
