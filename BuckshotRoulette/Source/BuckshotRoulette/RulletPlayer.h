@@ -32,36 +32,19 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class UCameraComponent* CameraComp;
 
-	UPROPERTY(EditAnywhere, Category = "MySettings")
+	UPROPERTY()
 	class ARulletPlayerHands* hands;
-
-	//UPROPERTY(EditAnywhere, Category = "MySettings")
-	//TSubclassOf <ARulletPlayerHands> hand;
 
 	void TakeHeadDamage();
 
 	void UnvisibleHead();
 
-	void VisibleHead();
+	//void VisibleHead();
 
-	void PlayerHitByBuckshot();
-
-	void PlayerMoveOriginLocation();
-
-	void AllowHeadMove();
+	//void PlayerHitByBuckshot();
 
 	bool bPlayerHit = false;
 
 	bool bHandNoneShow = false;
-
-	bool headMoveTime = false;
-
-	FVector backVector;
-
-	FVector forwardVector;
-
-	FVector originLocation;
-
-	FTimerHandle Timerhandle_HeadForwardMove;
 
 };

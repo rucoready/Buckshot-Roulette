@@ -40,12 +40,10 @@ void ARulletPlayerHands::BeginPlay()
 	// handOriginLocationVector의 X축 값을 기준으로 500 유닛 이동한 위치를 handAfterLocationVector에 저장
 	handAfterLocationVector = handOriginLocationVector + HandMoveVector;
 
-	//Disappear();
+	Disappear();
 	
 
 	handOriginRotator = GetActorRotation();
-
-	
 	
 }
 
@@ -140,8 +138,6 @@ void ARulletPlayerHands::MoveOriginRotation()
 void ARulletPlayerHands::HitAction()
 {
 	
-	//SetActorLocation(handMemoryVector);
-
 	if (bReShow)
 	{
 		//현재 액터의 위치가 움직인뒤의 x벡터만큼 작다면 이동
@@ -196,8 +192,6 @@ void ARulletPlayerHands::HitAction()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("YY"));
 			MoveOriginRotation();
-
-			
 		}
 	}
 
