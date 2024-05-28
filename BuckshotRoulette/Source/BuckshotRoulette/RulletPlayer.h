@@ -32,19 +32,56 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class UCameraComponent* CameraComp;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class ARulletPlayerHands* hands;
+
+	//UPROPERTY(EditAnywhere, Category = "MySettings")
+	//TSubclassOf <ARulletPlayerHands> hand;
 
 	void TakeHeadDamage();
 
 	void UnvisibleHead();
 
-	//void VisibleHead();
+	void VisibleHead();
 
-	//void PlayerHitByBuckshot();
+	void PlayerHitByBuckshot();
+
+	void PlayerMoveOriginLocation();
+
+	void AllowHeadMove();
+
+	void InitLifeUI();
+
+	void EndPlayerTurn();
 
 	bool bPlayerHit = false;
 
 	bool bHandNoneShow = false;
+
+	bool headMoveTime = false;
+
+	FVector backVector;
+
+	FVector forwardVector;
+
+	FVector originLocation;
+
+	FTimerHandle Timerhandle_HeadForwardMove;
+
+	UPROPERTY(EditAnywhere, Category="MySettings")
+	int32 maxHP = 4;
+
+	UPROPERTY(EditAnywhere, Category="MySettings")
+	int32 currentHP = maxHP;
+
+	UPROPERTY(EditAnywhere, Category="MySettings")
+	class UWidgetComponent* hpComp;
+
+	UPROPERTY(EditDefaultsOnly, Category="MySettings")
+	TSubclassOf<class ULifePointWidget> lifeUIFactory;
+
+	class ULifePointWidget* lifeUI;
+
+
 
 };

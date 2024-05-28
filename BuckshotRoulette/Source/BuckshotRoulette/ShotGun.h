@@ -23,21 +23,4 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
-	void RandomShot();
-	void Shoot();
-
-	UPROPERTY(EditAnyWhere, Category = "shoot")
-	class UStaticMeshComponent* Shotgun;
-
-	UPROPERTY(EditAnyWhere, Category = "shoot")
-	class UStaticMeshComponent* Shotgunload;
-	UPROPERTY(EditAnyWhere, Category = "shoot")
-	int32 LiveBullets;
-	UPROPERTY(EditAnyWhere, Category = "shoot")
-	int32 BlankBullets;
-
-	bool HasLiVEBullet;
-
-
 };

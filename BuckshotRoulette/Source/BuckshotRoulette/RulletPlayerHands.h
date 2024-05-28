@@ -83,6 +83,8 @@ public:
 
 	bool bHandDownMoveFinish = false;
 
+	
+
 	FTimerHandle Timerhandle_Show;
 
 	FTimerHandle Timerhandle_StartMove;
@@ -107,8 +109,10 @@ public:
 
 	FVector handAfterLocationVector;
 
+	
+	//플레이어가 피격당했을떄 움직이는 벡터값
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	FVector HandMoveVector = FVector(200, 0, 0);
+	FVector HandMoveVector = FVector(100, 0, 0);
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	float handForwardspeed = 300.0f;
