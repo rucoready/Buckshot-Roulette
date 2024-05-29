@@ -126,6 +126,29 @@ void ARulletPlayer::Tick(float DeltaTime)
 	PlayerMoveOriginLocation();
 
 	CheckMyTurn();
+
+	//FVector WorldPosition, WorldDirection;
+	//APlayerController* MyController = Cast<APlayerController>(GetController());
+	//MyController->DeprojectMousePositionToWorld(WorldPosition, WorldDirection);
+
+	//FHitResult hitInfo;   // 마우스가 히트되었을때	
+	//FVector start = CameraComp->GetComponentLocation();
+	//FVector end = start + CameraComp->GetForwardVector() * 1000000;
+	//FCollisionQueryParams Params;
+	//Params.AddIgnoredActor(this);
+
+	////bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, WorldPosition, WorldDirection * 1000000, ECC_Visibility, Params);
+	//if (GetWorld()->LineTraceSingleByChannel(hitInfo, WorldPosition, WorldPosition + WorldDirection * 10000, ECC_Visibility, Params))
+	//{
+	//	CachedDestination = hitInfo.ImpactPoint;
+	//	DrawDebugLine(GetWorld(), start, CachedDestination, FColor(0, 255, 0), false, 5.0f, 0, 1.0f);
+	//	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletImpactVFXFactory, CachedDestination);
+
+	//}
+	//else
+	//{
+	//	DrawDebugLine(GetWorld(), WorldPosition, WorldDirection * 100000, FColor(255, 0, 0), false, 5.0f, 0, 1.0f);
+	//}
 }
 
 // Called to bind functionality to input
