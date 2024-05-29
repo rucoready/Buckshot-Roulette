@@ -59,6 +59,8 @@ public:
 
 	void EndPlayerTurn();
 
+	
+
 	bool bPlayerHit = false;
 
 	bool bHandNoneShow = false;
@@ -95,12 +97,29 @@ public:
 	UPROPERTY(EditDefaultsOnly,Category = Input)
 	class UInputAction* Ia_LeftMouse;
 
+	UPROPERTY(EditDefaultsOnly,Category = Input)
+	class UInputAction* Ia_ChangeTurn;
+
+	UPROPERTY(EditDefaultsOnly,Category = Input)
+	class UInputMappingContext* imc_myMapping;
+
+	void ChangeTurn(const FInputActionValue& value);
+
 	void OnIAMouse(const FInputActionValue& value);
+
+	void CheckMyTurn();
 
 	FVector CachedDestination;
 
 
 	UPROPERTY(EditDefaultsOnly,Category = TPS)
 	class UParticleSystem* BulletImpactVFXFactory;
+
+	//플레이어 턴
+	void StartTurn();
+
+	void EndTurn();
+
+	bool myTurn = false;
 
 };

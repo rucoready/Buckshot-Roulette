@@ -73,4 +73,11 @@ public:
 	UPROPERTY(EditAnywhere, Category="MySettings")
 	class UWidgetComponent* hpComp;
 
+	//플레이어 턴
+	void StartTurn();
+
+	void EndTurn();
+
+	bool myTurn = false;
+
 };

@@ -13,13 +13,10 @@ ARulletPlayer2::ARulletPlayer2()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	playerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
 	playerMesh->SetupAttachment(GetMesh());
 	playerMesh->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
-	playerMesh->SetRelativeLocation(FVector(0, 10, 120));
+	playerMesh->SetRelativeLocation(FVector(0, 10, 140));
 	playerMesh->SetWorldScale3D(FVector(0.5f));
 
 
@@ -34,7 +31,8 @@ ARulletPlayer2::ARulletPlayer2()
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(RootComponent);
-	CameraComp->SetRelativeLocation(FVector(0, 0, 50));
+	CameraComp->SetRelativeLocation(FVector(100, -3.46, 216));
+	CameraComp->SetRelativeRotation(FRotator(-16.1, 0, 0));
 
 }
 
@@ -71,7 +69,7 @@ void ARulletPlayer2::BeginPlay()
 	// forwardVector의 반대 방향으로 이동
 	backVector = CurrentLocation - (forwardVector * 400.0f);
 
-	bPlayerHit = true;
+	//bPlayerHit = true;
 
 	//시작할떄 currentHP 를 maxHP와 동기화
 	currentHP = maxHP;
@@ -117,6 +115,7 @@ void ARulletPlayer2::VisibleHead()
 
 void ARulletPlayer2::PlayerHitByBuckshot()
 {
+	//플레이어가 샷건에게 맞았
 	if (bPlayerHit)
 	{
 		//플레이어의 위치를 뒤쪽벡터로 이동시킨다
@@ -176,6 +175,16 @@ void ARulletPlayer2::AllowHeadMove()
 	UE_LOG(LogTemp, Warning, TEXT("ALlow"));
 	VisibleHead();
 	headMoveTime = true;
+}
+
+void ARulletPlayer2::StartTurn()
+{
+	myTurn = true;
+}
+
+void ARulletPlayer2::EndTurn()
+{
+	myTurn = false;
 }
 
 

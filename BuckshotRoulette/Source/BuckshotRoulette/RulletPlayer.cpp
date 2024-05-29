@@ -22,9 +22,9 @@ ARulletPlayer::ARulletPlayer()
 	playerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
 	playerMesh->SetupAttachment(GetMesh());
 	playerMesh->SetRelativeRotation(FRotator(0.0f, 180.0f, 0.0f));
-	playerMesh->SetRelativeLocation(FVector(0,10,120));
+	playerMesh->SetRelativeLocation(FVector(0, 10, 140));
 	playerMesh->SetWorldScale3D(FVector(0.5f));
-	
+
 
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> Player(TEXT("/Script/Engine.StaticMesh'/Game/Assets/Player/PlayerHead.PlayerHead'"));
@@ -37,7 +37,8 @@ ARulletPlayer::ARulletPlayer()
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(RootComponent);
-	CameraComp->SetRelativeLocation(FVector(0, 0, 50));
+	CameraComp->SetRelativeLocation(FVector(100, -3.46, 216));
+	CameraComp->SetRelativeRotation(FRotator(-16.1, 0, 0));
 
 	
 
@@ -51,8 +52,21 @@ void ARulletPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+		
+	// 플레이어컨트롤러를 가져오고싶다.
+	pc = GetWorld()->GetFirstPlayerController();
+	// UEnhancedInputLocalPlayerSubsystem를 가져와서
+	if (pc)
+	{
+		auto subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
+		if (subsystem)
+		{
+			// AddMappingContext를 호출하고싶다.
+			subsystem->AddMappingContext(imc_myMapping, 0);
+		}
+	}
 	//	플레이어 컨트롤러 가져와서 마우스 커서 보이게
-	pc = GetWorld()->GetFirstPlayerController(); // 여기서 펄스트는 플레이어0번을 말함. pc는 플레이어컨트롤러의 약자
+	//pc = GetWorld()->GetFirstPlayerController(); // 여기서 펄스트는 플레이어0번을 말함. pc는 플레이어컨트롤러의 약자*/
 
 
 	// 2. EnhancedInput 내용을 담은 subsystem을 가져온다.
@@ -91,7 +105,7 @@ void ARulletPlayer::BeginPlay()
 	// forwardVector의 반대 방향으로 이동
 	backVector = CurrentLocation - (forwardVector * 400.0f);
 
-	bPlayerHit = true;
+	//bPlayerHit = true;
 	
 	//시작할떄 currentHP 를 maxHP와 동기화
 	currentHP = maxHP;
@@ -111,18 +125,20 @@ void ARulletPlayer::Tick(float DeltaTime)
 
 	PlayerMoveOriginLocation();
 
-
+	CheckMyTurn();
 }
 
 // Called to bind functionality to input
 void ARulletPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-
-		EnhancedInputComponent->BindAction(Ia_LeftMouse, ETriggerEvent::Started, this, &ARulletPlayer::OnIAMouse);
+	
+	auto* input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (input)
+	{
+		input->BindAction(Ia_LeftMouse, ETriggerEvent::Started, this, &ARulletPlayer::OnIAMouse);
+		input->BindAction(Ia_ChangeTurn, ETriggerEvent::Completed, this, &ARulletPlayer::ChangeTurn);
 	}
-
 
 }
 
@@ -234,6 +250,12 @@ void ARulletPlayer::UnvisibleHead()
 
 
  
+ void ARulletPlayer::ChangeTurn(const FInputActionValue& value)
+ {
+	myTurn = false;
+	UE_LOG(LogTemp, Warning, TEXT("ChangeTurn"));
+ }
+
  void ARulletPlayer::OnIAMouse(const FInputActionValue& value)
  {
 	//요한 라인트레이스
@@ -271,6 +293,25 @@ void ARulletPlayer::UnvisibleHead()
 	 //	DrawDebugLine(GetWorld(), WorldPosition, WorldDirection * 1000000, FColor(255, 0, 0), false, 5.0f, 0, 1.0f);
 	 //}
 
+ }
+
+ void ARulletPlayer::CheckMyTurn()
+ {
+	if(myTurn)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player1Turn"));
+	}
+	
+ }
+
+ void ARulletPlayer::StartTurn()
+ {
+	 myTurn = true;
+ }
+
+ void ARulletPlayer::EndTurn()
+ {
+	 myTurn = false;
  }
 
 
