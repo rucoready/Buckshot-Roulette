@@ -6,6 +6,11 @@
 #include "GameFramework/Character.h"
 #include "RulletPlayer.generated.h"
 
+class UInputMappingContext;
+class UInputAction;
+struct FInputActionValue;
+
+
 UCLASS()
 class BUCKSHOTROULETTE_API ARulletPlayer : public ACharacter
 {
@@ -83,5 +88,19 @@ public:
 	class ULifePointWidget* lifeUI;
 
 
+	// 요한 플레이어 컨트롤러 가져온거 클릭 이벤트
+	UPROPERTY()
+	class APlayerController* pc;
+
+	UPROPERTY(EditDefaultsOnly,Category = Input)
+	class UInputAction* Ia_LeftMouse;
+
+	void OnIAMouse(const FInputActionValue& value);
+
+	FVector CachedDestination;
+
+
+	UPROPERTY(EditDefaultsOnly,Category = TPS)
+	class UParticleSystem* BulletImpactVFXFactory;
 
 };

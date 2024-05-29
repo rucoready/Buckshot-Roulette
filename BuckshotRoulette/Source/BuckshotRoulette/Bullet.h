@@ -27,4 +27,11 @@ public:
 	class UStaticMeshComponent* bullet;
 
 
+	void LoadLiveBullet();
+
+	UPROPERTY(EditAnyWhere, Category = "shoot")
+	int32 LiveBullets;
+	UPROPERTY(EditAnyWhere, Category = "shoot")
+	int32 BlankBullets;
+
 };

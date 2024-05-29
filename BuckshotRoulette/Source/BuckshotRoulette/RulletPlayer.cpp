@@ -8,6 +8,10 @@
 #include "RulletPlayerHands.h"
 #include "LifePointWidget.h"
 #include "TurnGameInstance.h"
+#include <../../../../../../../Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h>
+#include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputSubsystems.h>
+#include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h>
+
 
 // Sets default values
 ARulletPlayer::ARulletPlayer()
@@ -46,6 +50,18 @@ ARulletPlayer::ARulletPlayer()
 void ARulletPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//	플레이어 컨트롤러 가져와서 마우스 커서 보이게
+	pc = GetWorld()->GetFirstPlayerController(); // 여기서 펄스트는 플레이어0번을 말함. pc는 플레이어컨트롤러의 약자
+
+
+	// 2. EnhancedInput 내용을 담은 subsystem을 가져온다.
+	if (pc != nullptr) // 보험, 널포인터가 아닐때 실행하도록 만듬 , 크래쉬가 안나기위한 방어코드.
+	{
+		//UEnhancedInputLocalPlayerSubsystem* subsys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
+
+		pc->SetShowMouseCursor(true);  // 플레이중 마우스 커서 보이게
+	}
 
 	// TActorIterator를 사용하여 hands를 찾기
 	for (TActorIterator<ARulletPlayerHands> It(GetWorld()); It; ++It)
@@ -94,12 +110,19 @@ void ARulletPlayer::Tick(float DeltaTime)
 	PlayerHitByBuckshot();
 
 	PlayerMoveOriginLocation();
+
+
 }
 
 // Called to bind functionality to input
 void ARulletPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
+
+		EnhancedInputComponent->BindAction(Ia_LeftMouse, ETriggerEvent::Started, this, &ARulletPlayer::OnIAMouse);
+	}
+
 
 }
 
@@ -209,8 +232,46 @@ void ARulletPlayer::UnvisibleHead()
 	 }
  }
 
- 
 
+ 
+ void ARulletPlayer::OnIAMouse(const FInputActionValue& value)
+ {
+	//요한 라인트레이스
+	 FVector WorldPosition, WorldDirection;
+	 APlayerController* MyController = Cast<APlayerController>(GetController());
+	 MyController->DeprojectMousePositionToWorld(WorldPosition, WorldDirection);
+
+	 FHitResult hitInfo;   // 마우스가 히트되었을때	
+	 FVector start = CameraComp->GetComponentLocation();
+	 FVector end = start + CameraComp->GetForwardVector() * 1000000;
+	 FCollisionQueryParams Params;
+	 Params.AddIgnoredActor(this);
+
+	 //bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, WorldPosition, WorldDirection * 1000000, ECC_Visibility, Params);
+	 if (GetWorld()->LineTraceSingleByChannel(hitInfo, WorldPosition, WorldPosition + WorldDirection * 10000, ECC_Visibility, Params))
+	 {
+		 CachedDestination = hitInfo.ImpactPoint;
+		 DrawDebugLine(GetWorld(), start, CachedDestination, FColor(0, 255, 0), false, 5.0f, 0, 1.0f);
+		 UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletImpactVFXFactory, CachedDestination);
+
+	 }
+	 else
+	 {
+		 DrawDebugLine(GetWorld(), WorldPosition, WorldDirection * 100000, FColor(255, 0, 0), false, 5.0f, 0, 1.0f);
+	 }
+	 //if (bHit)
+	 //{
+	 //	hitInfo.ImpactPoint;
+	 //	UE_LOG(LogTemp, Log, TEXT("ABCDEFG"));
+	 //	//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletImpactVFXFactory, hitInfo.ImpactPoint);
+	 //	DrawDebugLine(GetWorld(), start, hitInfo.ImpactPoint, FColor(0, 255, 0), false, 5.0f, 0, 1.0f);
+	 //}
+	 //else
+	 //{
+	 //	DrawDebugLine(GetWorld(), WorldPosition, WorldDirection * 1000000, FColor(255, 0, 0), false, 5.0f, 0, 1.0f);
+	 //}
+
+ }
 
 
 
