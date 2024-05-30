@@ -109,6 +109,11 @@ public:
 
 	void CheckMyTurn();
 
+	class UMainWidget* mainUI;
+
+	UPROPERTY(EditDefaultsOnly, Category = MySettings)
+	TSubclassOf<class UUserWidget> mainUIFactory;
+
 	FVector CachedDestination;
 
 
@@ -121,5 +126,7 @@ public:
 	void EndTurn();
 
 	bool myTurn = false;
+
+	bool doOneTurnPlay = false;
 
 };

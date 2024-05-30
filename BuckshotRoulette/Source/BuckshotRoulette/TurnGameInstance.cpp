@@ -20,26 +20,11 @@ void UTurnGameInstance::Init()
 	//BeginPlay같은역할 
 	Super::Init();
 	
-	UE_LOG(LogTemp,Warning,TEXT("TurnGameInstanced"));
-	// TActorIterator를 사용하여 player1를 찾기
-	for (TActorIterator<ARulletPlayer> It(GetWorld()); It; ++It)
-	{
-		player1 = *It;
-		break;
-	}
-
-	// TActorIterator를 사용하여 player2를 찾기
-	for (TActorIterator<ARulletPlayer2> It(GetWorld()); It; ++It)
-	{
-		player2 = *It;
-		break;
-	}
-	//게임플레이어 두명이 전부 있을떄 플레이어1의 턴을 시작한다.
-	if (player1 == nullptr )
-	{
-		UE_LOG(LogTemp,Warning,TEXT("PLAYER1NULL"));
-		//player1->myTurn=true;
-	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("TurnGameInstanced"));
+    
+		
+	
 }
 
 void UTurnGameInstance::NextTurn()

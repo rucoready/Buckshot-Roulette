@@ -11,6 +11,7 @@
 #include <../../../../../../../Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h>
 #include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputSubsystems.h>
 #include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h>
+#include "MainWidget.h"
 
 
 // Sets default values
@@ -41,7 +42,7 @@ ARulletPlayer::ARulletPlayer()
 	CameraComp->SetRelativeRotation(FRotator(-16.1, 0, 0));
 
 	
-
+	
 	
 	
 	
@@ -51,10 +52,14 @@ ARulletPlayer::ARulletPlayer()
 void ARulletPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 		
 	// 플레이어컨트롤러를 가져오고싶다.
 	pc = GetWorld()->GetFirstPlayerController();
+
+	
+
+	
 	// UEnhancedInputLocalPlayerSubsystem를 가져와서
 	if (pc)
 	{
@@ -110,8 +115,10 @@ void ARulletPlayer::BeginPlay()
 	//시작할떄 currentHP 를 maxHP와 동기화
 	currentHP = maxHP;
 
-	
+	StartTurn();
 
+
+	
 	
 }
 
@@ -296,7 +303,7 @@ void ARulletPlayer::UnvisibleHead()
 	 if (GetWorld()->LineTraceSingleByChannel(hitInfo, WorldPosition, WorldPosition + WorldDirection * 10000, ECC_Visibility, Params))
 	 {
 		 CachedDestination = hitInfo.ImpactPoint;
-		 DrawDebugLine(GetWorld(), start, CachedDestination, FColor(0, 255, 0), false, 5.0f, 0, 1.0f);
+		 DrawDebugLine(GetWorld(), start, CachedDestination, FColor(0, 255, 0), false, 1.0f, 0, 1.0f);
 		 UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletImpactVFXFactory, CachedDestination);
 
 	 }
@@ -320,9 +327,26 @@ void ARulletPlayer::UnvisibleHead()
 
  void ARulletPlayer::CheckMyTurn()
  {
-	if(myTurn)
+	//나의 턴이라서 myTurn이 true 이고 doOneTurnPlay가 false 일때 나의턴이다
+	if(myTurn && !doOneTurnPlay)
 	{
+		//나의 턴일때 마우스 제어를 가능하게한다
+		pc->SetInputMode(FInputModeGameAndUI());
+		//pc->SetInputMode(FInputModeUIOnly());
+		pc->SetShowMouseCursor(true);
+
+		//만약 ui가 있다면
+		if (mainUIFactory)
+		{
+			//나의 턴일때 나의 뷰포트에 mainUI를 띄운다
+			mainUI = Cast<UMainWidget>(CreateWidget(GetWorld(), mainUIFactory));
+			mainUI->AddToViewport();
+		}
+		
 		UE_LOG(LogTemp, Warning, TEXT("Player1Turn"));
+		//턴을 한번만 실행시키기위해서 doOneTurnPlay 를 true로 변경시킨다
+		doOneTurnPlay = true;
+		
 	}
 	
  }
