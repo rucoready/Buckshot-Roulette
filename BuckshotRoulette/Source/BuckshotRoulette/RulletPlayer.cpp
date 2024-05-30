@@ -12,6 +12,7 @@
 #include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputSubsystems.h>
 #include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h>
 #include "MainWidget.h"
+#include "ShotGun.h"
 
 
 // Sets default values
@@ -118,8 +119,6 @@ void ARulletPlayer::BeginPlay()
 	StartTurn();
 
 
-	
-	
 }
 
 // Called every frame
