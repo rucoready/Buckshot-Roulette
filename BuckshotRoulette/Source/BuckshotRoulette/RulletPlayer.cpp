@@ -117,14 +117,6 @@ void ARulletPlayer::BeginPlay()
 
 	StartTurn();
 
-	// 샷건 함수 가져오려고 캐스트 요한
-	for (TActorIterator<AShotGun>it(GetWorld()); it; ++it)
-	{
-		Shot = *it;
-		UE_LOG(LogTemp, Warning, TEXT("32423214213"));
-	}
-
-	Shot = Cast<AShotGun>(Shot);
 
 	
 	
@@ -369,9 +361,5 @@ void ARulletPlayer::UnvisibleHead()
 	 myTurn = false;
  }
 
- void ARulletPlayer::ShotBang()
- {
-	 Shot->RandomShot();
- }
 
 

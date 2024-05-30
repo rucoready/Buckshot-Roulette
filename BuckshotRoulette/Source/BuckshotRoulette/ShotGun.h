@@ -25,7 +25,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "shoot")
 	void RandomShot();
-
 	UFUNCTION(BlueprintCallable, Category = "shoot")
 	void Shoot();
 
@@ -43,10 +42,10 @@ public:
 
 
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "shoot")
+	UPROPERTY(EditAnyWhere, Category = "shoot")
 	class UStaticMeshComponent* Shotgun;
 
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "shoot")
+	UPROPERTY(EditAnyWhere, Category = "shoot")
 	class UStaticMeshComponent* Shotgunload;
 	
 	UPROPERTY(EditAnyWhere, Category = "shoot")

@@ -129,16 +129,4 @@ public:
 
 	bool doOneTurnPlay = false;
 
-	// 플레이어 샷건 연동 요한
-
-	UFUNCTION( BlueprintCallable,Category = "shoot")
-	void ShotBang();
-
-	UPROPERTY(EditAnyWhere, Category = "shoot")
-	class  AShotGun* Shot;
-
-
-	int32 bullet1 = 3;
-	int32 bullet2 = 3;
-
 };
