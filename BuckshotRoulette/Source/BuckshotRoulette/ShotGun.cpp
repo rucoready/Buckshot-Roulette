@@ -12,16 +12,16 @@ AShotGun::AShotGun()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Shotgun = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticmMeshComp"));
-	Shotgun->SetupAttachment(RootComponent);
+	//Shotgun->SetupAttachment(RootComponent);
 
 	Shotgunload = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LoadStaticmMeshComp"));
 	Shotgunload->SetupAttachment(Shotgun);
 	Shotgunload->SetRelativeLocation(FVector(0, 0, -17));
 
-	
-	
-	
-	
+
+
+
+
 }
 
 // Called when the game starts or when spawned
@@ -31,8 +31,11 @@ void AShotGun::BeginPlay()
 
 	bullet = Cast<ABullet>(bullet);
 
-	RealBullet = bullet->LiveBullets;
-	FakeBullet = bullet->BlankBullets;
+	//RealBullet = bullet->LiveBullets;
+	//FakeBullet = bullet->BlankBullets;
+
+	RealBullet = 3;
+	FakeBullet = 3;
 }
 
 // Called every frame
@@ -44,8 +47,7 @@ void AShotGun::Tick(float DeltaTime)
 
 void AShotGun::RandomShot()
 {
-	RealBullet = bullet->LiveBullets;
-	FakeBullet = bullet->BlankBullets;
+
 
 	if (RealBullet >= 1)
 	{
@@ -86,13 +88,13 @@ void AShotGun::RandomShot()
 }
 
 void AShotGun::Shoot()
-{	
-	
+{
+
 }
 
 void AShotGun::LoadLiveBullet()
 {
-	if(RealBullet)
+	if (RealBullet)
 	{
 		RealBullet -= 1;
 	}
@@ -108,7 +110,7 @@ void AShotGun::LoadBlankBullet()
 
 void AShotGun::AddLiveBullet()
 {
-	if(RealBullet)
+	if (RealBullet)
 	{
 		RealBullet = Amount + RealBullet;
 	}
@@ -118,4 +120,3 @@ void AShotGun::AddBlankBullet()
 {
 	FakeBullet += Amount;
 }
-
