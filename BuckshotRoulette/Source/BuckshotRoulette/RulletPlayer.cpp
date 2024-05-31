@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "RulletPlayer.h"
 #include "Components/StaticMeshComponent.h"
@@ -13,12 +11,13 @@
 #include <../../../../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/EnhancedInputComponent.h>
 #include "MainWidget.h"
 #include "ShotGun.h"
+#include "Net/UnrealNetwork.h"
 
 
-// Sets default values
+
 ARulletPlayer::ARulletPlayer()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	
 	PrimaryActorTick.bCanEverTick = true;
 	
 	playerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
@@ -27,41 +26,29 @@ ARulletPlayer::ARulletPlayer()
 	playerMesh->SetRelativeLocation(FVector(0, 10, 140));
 	playerMesh->SetWorldScale3D(FVector(0.5f));
 
-
-
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> Player(TEXT("/Script/Engine.StaticMesh'/Game/Assets/Player/PlayerHead.PlayerHead'"));
 	if (Player.Succeeded())
 	{
 		playerMesh->SetStaticMesh(Player.Object);
 	}
 
-
-
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(RootComponent);
 	CameraComp->SetRelativeLocation(FVector(100, -3.46, 216));
 	CameraComp->SetRelativeRotation(FRotator(-16.1, 0, 0));
 
-	
-	
-	
-	
+
 	
 }
 
-// Called when the game starts or when spawned
+//비긴플레이
 void ARulletPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
-		
 	// 플레이어컨트롤러를 가져오고싶다.
 	pc = GetWorld()->GetFirstPlayerController();
 
-	
-
-	
-	// UEnhancedInputLocalPlayerSubsystem를 가져와서
 	if (pc)
 	{
 		auto subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
@@ -71,15 +58,10 @@ void ARulletPlayer::BeginPlay()
 			subsystem->AddMappingContext(imc_myMapping, 0);
 		}
 	}
-	//	플레이어 컨트롤러 가져와서 마우스 커서 보이게
-	//pc = GetWorld()->GetFirstPlayerController(); // 여기서 펄스트는 플레이어0번을 말함. pc는 플레이어컨트롤러의 약자*/
-
 
 	// 2. EnhancedInput 내용을 담은 subsystem을 가져온다.
-	if (pc != nullptr) // 보험, 널포인터가 아닐때 실행하도록 만듬 , 크래쉬가 안나기위한 방어코드.
+	if (pc != nullptr) 
 	{
-		//UEnhancedInputLocalPlayerSubsystem* subsys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(pc->GetLocalPlayer());
-
 		pc->SetShowMouseCursor(true);  // 플레이중 마우스 커서 보이게
 	}
 
@@ -90,14 +72,6 @@ void ARulletPlayer::BeginPlay()
 		break;
 	}
 
-	if (hands == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Hands Are nullptr"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Hands Are in"));
-	}
 
 	//플레이어의 초기오리진위치를 기억한다
 	originLocation = GetActorLocation();
@@ -118,21 +92,20 @@ void ARulletPlayer::BeginPlay()
 
 	StartTurn();
 
-
 }
 
-// Called every frame
+// 틱
 void ARulletPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	
 	PlayerHitByBuckshot();
 
 	PlayerMoveOriginLocation();
 
 	CheckMyTurn();
 
+	//라인트레이서
 	//FVector WorldPosition, WorldDirection;
 	//APlayerController* MyController = Cast<APlayerController>(GetController());
 	//MyController->DeprojectMousePositionToWorld(WorldPosition, WorldDirection);
@@ -157,7 +130,7 @@ void ARulletPlayer::Tick(float DeltaTime)
 	//}
 }
 
-// Called to bind functionality to input
+// 인풋
 void ARulletPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -171,16 +144,10 @@ void ARulletPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
-void ARulletPlayer::TakeHeadDamage()
-{
-	
-	
-}
 
 void ARulletPlayer::UnvisibleHead()
 {
 	playerMesh->SetVisibility(false);
-
 }
 
 
@@ -194,27 +161,9 @@ void ARulletPlayer::UnvisibleHead()
  {
 	 if (bPlayerHit)
 	 {
-		 //플레이어의 위치를 뒤쪽벡터로 이동시킨다
-		 SetActorLocation(backVector);
-
-		 //잠시 플레이어 헤드를 투명하게한다
-		 UnvisibleHead();
-
-		 //5초뒤에 머리투명을 풀고 움직인다.
-		 GetWorldTimerManager().SetTimer(Timerhandle_HeadForwardMove, this, &ARulletPlayer::AllowHeadMove, 5.0f, false);
-		 
-		 //손의 움직임을 제어한다.
-		 if (hands)
-		 {
-			 hands->Disappear();
-		 }
-
-		 //플레이어 헤드의 위치를 originLocation의 위치로 다시 이동시킨다.
-		 bPlayerHit = false;
+		 //클라가 서버에게 데미지를 입혀주세요 요청
+		 ServerRPC_TakeDamage();
 	 }
-	 
-	 
-	 
  }
 
  void ARulletPlayer::PlayerMoveOriginLocation()
@@ -272,8 +221,7 @@ void ARulletPlayer::UnvisibleHead()
 	 {
 		 GameInstance->NextTurn();
 		 int32 CurrentTurn = GameInstance->GetCurrentTurn();
-		 //턴사용 로직?
-		 UE_LOG(LogTemp, Log, TEXT("Current Turn: %d"), CurrentTurn);
+		 
 	 }
  }
 
@@ -282,6 +230,7 @@ void ARulletPlayer::UnvisibleHead()
  void ARulletPlayer::ChangeTurn(const FInputActionValue& value)
  {
 	myTurn = false;
+	bPlayerHit = true;
 	UE_LOG(LogTemp, Warning, TEXT("ChangeTurn"));
  }
 
@@ -358,6 +307,46 @@ void ARulletPlayer::UnvisibleHead()
  void ARulletPlayer::EndTurn()
  {
 	 myTurn = false;
+ }
+
+ //클라와 서버간의 변수 동기화
+ void ARulletPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+ {
+	 Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	 DOREPLIFETIME(ARulletPlayer, hands);
+ }
+
+ void ARulletPlayer::ServerRPC_TakeDamage_Implementation()
+ {
+	 currentHP--;
+
+	 //서버가 클라이언트들한테 데미지를 입혔다라는 멀티캐스트를 날려준다
+	 MultiRPC_TakeDamage(currentHP);
+ }
+
+ //클라이언트가 할일들
+ void ARulletPlayer::MultiRPC_TakeDamage_Implementation(float _currentHP)
+ {
+	 //플레이어의 위치를 뒤쪽벡터로 이동시킨다
+	 SetActorLocation(backVector);
+
+	 //잠시 플레이어 헤드를 투명하게한다
+	 UnvisibleHead();
+
+	 //5초뒤에 머리투명을 풀고 움직인다.
+	 GetWorldTimerManager().SetTimer(Timerhandle_HeadForwardMove, this, &ARulletPlayer::AllowHeadMove, 5.0f, false);
+
+	 //손의 움직임을 제어한다.
+	 if (hands)
+	 {
+		 hands->Disappear();
+	 }
+
+	 //플레이어 헤드의 위치를 originLocation의 위치로 다시 이동시킨다.
+	 bPlayerHit = false;
+
+	 currentHP = _currentHP;
  }
 
 

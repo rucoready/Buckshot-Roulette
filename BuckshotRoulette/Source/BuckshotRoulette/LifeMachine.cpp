@@ -95,25 +95,8 @@ void ALifeMachine::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("playerController1 is null"));
 	}
 
-	// 두번째 플레이어 컨트롤러 테이크
-	APlayerController* playerController2 = UGameplayStatics::GetPlayerController(GetWorld(), 1);
-	if (playerController2)
-	{
-		player2 = Cast<ARulletPlayer2>(playerController2->GetPawn());
-		if (!player2)
-		{
-			UE_LOG(LogTemp, Error, TEXT("player2 is null"));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("playerController2 is null"));
-	}
-
-	
-
 	ShowLifeUI();
-	//ShowLifeUI2();
+
 
 }
 
@@ -122,48 +105,34 @@ void ALifeMachine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+
 }
 
 void ALifeMachine::ShowLifeUI()
 {
 	//라이프 위젯이 있다면
-		//LifePointWidget을 캐스팅해와서 lifeUI변수에 담는다
+	//LifePointWidget을 캐스팅해와서 lifeUI변수에 담는다
 	lifeUI = Cast<ULifePointWidget>(lifeComp->GetWidget());
 
+	//위젯1번에 대입
 	if (lifeUI)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("LifeUI1"));
 		//lifeUI안의 InitLifePointSet 함수안에 player1의 currentHP 값을 담는다
 		lifeUI->InitLifePointSet(player1->currentHP);
 
-		// 			lifeComp->SetDrawSize(FVector2D(150, 20));
-		// 			lifeComp->SetRelativeLocation(FVector(0, 0, 120));
-	}
-	if (lifeUI == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ui1null"));
 	}
 
-}
-
-void ALifeMachine::ShowLifeUI2()
-{
-	///////////////////////////////    2
-	//라이프 위젯이 있다면
-		//LifePointWidget을 캐스팅해와서 lifeUI변수에 담는다
 	lifeUI2 = Cast<ULifePointWidget2>(lifeComp2->GetWidget());
 
+	//위젯2번에 대입
 	if (lifeUI2)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("LifeUI2"));
-		//lifeUI안의 InitLifePointSet 함수안에 player2의 currentHP 값을 담는다
-		//lifeUI2->InitLifePointSet(player2->currentHP);
+		//lifeUI2안의 InitLifePointSet 함수안에 player1의 currentHP 값을 담는다
+		lifeUI2->InitLifePointSet(player1->currentHP);
+	}
 
-		
-	}
-	if (lifeUI2 == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ui2null"));
-	}
+
 }
+
 
