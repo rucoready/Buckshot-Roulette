@@ -34,4 +34,11 @@ public:
 
 	UFUNCTION()
 	void ButtonChangeTurnClick();
+
+	// ¼¦°Ç Æ®¸®°Å 
+	UFUNCTION( BlueprintCallable,Category = "shoot")
+	void ShootBang();
+
+	UPROPERTY(EditAnyWhere, Category = "shoot")
+	class  AShotGun* Bang;
 };

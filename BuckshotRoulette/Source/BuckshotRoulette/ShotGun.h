@@ -25,6 +25,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "shoot")
 	void RandomShot();
+
 	UFUNCTION(BlueprintCallable, Category = "shoot")
 	void Shoot();
 
@@ -40,16 +41,33 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "shoot")
 	void AddBlankBullet();
 
+	UFUNCTION(BlueprintCallable, Category = "shoot")
+	void PlayerRot();
 
 
-	UPROPERTY(EditAnyWhere, Category = "shoot")
+	UFUNCTION(BlueprintCallable, Category = "shoot")
+	void Player2Rot();
+
+
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "shoot")
 	class UStaticMeshComponent* Shotgun;
 
-	UPROPERTY(EditAnyWhere, Category = "shoot")
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "shoot")
 	class UStaticMeshComponent* Shotgunload;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "shoot")
+	class UNiagaraComponent* SpawnLocation;
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "shoot")
+	class UNiagaraSystem* NS_hitimpact;
 	
 	UPROPERTY(EditAnyWhere, Category = "shoot")
 	class  ABullet* bullet;
+
+	
+	UPROPERTY(EditAnyWhere, Category = "shoot")
+	class  ARulletPlayer2* player;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "shoot")
 	int32 RealBullet;
@@ -60,7 +78,37 @@ public:
 	int32 Amount;
 
 	bool HasLiVEBullet;
+
+	FRotator P2rot;
+
+	FRotator originRotation;
+
+	FVector ShotLocation;
+
+	FRotator ShotRotation;
+
+	FVector originLocation;
+
+	UPROPERTY(EditAnyWhere, Category = "shoot")
+	FRotator RotationRate;
+
+	FRotator ROTtator;
+
+	FVector UPVector;
+	FVector UPVector2;
+
+	FVector TarVector;
+
+	FVector TarVector2;
+
+	FRotator UPRotaor;
+
+	FRotator TarRotar;
+
+	FRotator TarRotar2;
+
 	
+	bool ShotMoveTime = false;
 
 
 };
