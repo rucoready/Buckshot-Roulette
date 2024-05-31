@@ -232,6 +232,8 @@ void ARulletPlayer::UnvisibleHead()
 	myTurn = false;
 	bPlayerHit = true;
 	UE_LOG(LogTemp, Warning, TEXT("ChangeTurn"));
+
+	hands->Reflag_HitAction();
  }
 
  void ARulletPlayer::OnIAMouse(const FInputActionValue& value)

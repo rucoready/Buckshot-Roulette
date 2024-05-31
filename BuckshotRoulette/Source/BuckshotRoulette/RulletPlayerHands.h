@@ -59,31 +59,42 @@ public:
 
 	void ResetbOnceTimerBack();
 
+	void Reflag_HitAction();
+
 	bool bHitShootgun = false;
 
-	bool bReShow = false;
+	
 
 	bool bStartBack = false;
 
 	bool bOnceTimerBack = false;
 
+	UPROPERTY(Replicated)
+	bool bReShow = false;
+
+	UPROPERTY(Replicated)
 	bool b1 = false;
 
+	UPROPERTY(Replicated)
 	bool bGoOriginLocation = false;
 
+	UPROPERTY(Replicated)
 	bool bGoOriginRotation = false;
 
-	bool bHandDown = false;
-
+	UPROPERTY(Replicated)
 	bool bTimerTriggered;
 
+	UPROPERTY(Replicated)
 	bool bTimerTriggered2;
 
+	UPROPERTY(Replicated)
 	bool bTimerTriggered3;
 
 	bool bHandDownMoveFinish = false;
 
-	
+	bool bHandDown = false;
+
+	FTimerHandle Timerhandle_ReflagHitAction;
 
 	FTimerHandle Timerhandle_Show;
 
@@ -125,4 +136,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class USceneComponent* sceneComp;
+
+	//////////////////////////////////////////네트워크 동기화///////////////////////////////
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const override;
 };

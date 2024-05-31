@@ -4,6 +4,7 @@
 #include "RulletPlayerHands.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ARulletPlayerHands::ARulletPlayerHands()
@@ -316,5 +317,35 @@ void ARulletPlayerHands::ResetbOnceTimerBack()
 	bHandDown = true;
 	bHandDownMoveFinish = true;
 	
+}
+
+void ARulletPlayerHands::Reflag_HitAction()
+{
+	// 변수 초기화
+	b1 = false;
+	bTimerTriggered = false;
+	bTimerTriggered2 = false;
+	bTimerTriggered3 = false;
+	bHandDown = false;
+	bHandDownMoveFinish = false;
+	bGoOriginLocation = false;
+	bGoOriginRotation = false;
+	bReShow = false;
+	PitchValue = 4.0f;  // 초기 Pitch 값
+
+	UE_LOG(LogTemp, Warning, TEXT("Reflag_HitAction"));
+}
+
+void ARulletPlayerHands::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ARulletPlayerHands, bReShow);
+	DOREPLIFETIME(ARulletPlayerHands, b1);
+	DOREPLIFETIME(ARulletPlayerHands, bGoOriginLocation);
+	DOREPLIFETIME(ARulletPlayerHands, bGoOriginRotation);
+	DOREPLIFETIME(ARulletPlayerHands, bTimerTriggered);
+	DOREPLIFETIME(ARulletPlayerHands, bTimerTriggered2);
+	DOREPLIFETIME(ARulletPlayerHands, bTimerTriggered3);
 }
 

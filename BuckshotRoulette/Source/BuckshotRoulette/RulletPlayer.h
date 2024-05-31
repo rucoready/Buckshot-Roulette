@@ -41,10 +41,10 @@ public:
 	class ARulletPlayerHands* hands;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	int32 maxHP = 4;
+	float maxHP = 4;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	int32 currentHP = maxHP;
+	float currentHP = maxHP;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class UWidgetComponent* hpComp;
