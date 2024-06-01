@@ -314,7 +314,7 @@ void AShotGun::CheckOwner()
 			// 나의 오너롤 하고 싶다.
 			SetOwner(newOwner);
 		}
-		DrawDebugSphere(GetWorld(), GetActorLocation(), CheckDst, 10, FColor::Red, 0, 0, 1);
+		//DrawDebugSphere(GetWorld(), GetActorLocation(), CheckDst, 10, FColor::Red, 0, 0, 1);
 	}
 }
 
