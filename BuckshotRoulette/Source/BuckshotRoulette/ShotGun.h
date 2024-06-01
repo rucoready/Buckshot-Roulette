@@ -96,19 +96,61 @@ public:
 
 	FVector UPVector;
 	FVector UPVector2;
-
+	UPROPERTY(Replicated)
 	FVector TarVector;
-
+	UPROPERTY(Replicated)
 	FVector TarVector2;
 
+	// 텟트용
+	/*UPROPERTY(ReplicatedUsing = OnRep_RotYAW)
+	FVector TarVector;
+	UPROPERTY(ReplicatedUsing = OnRep_RotYAW)
+	FVector TarVector2;*/
+
 	FRotator UPRotaor;
-
+	UPROPERTY(Replicated)
 	FRotator TarRotar;
-
+	UPROPERTY(Replicated)
 	FRotator TarRotar2;
 
 	
 	bool ShotMoveTime = false;
 
+	/*UPROPERTY(Replicated)
+	bool bHasClick;*/
 
+	// 샷건 움직이는 거 서버 연동
+
+	/*UFUNCTION(Server, Reliable)
+	void SeverRPC_MoveMeShotGun();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_MoveMeShotGun();
+
+	UFUNCTION(Server, Reliable)
+	void SeverRPC_MoveEnemyShotGun();
+
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_MoveEnemyShotGun();*/
+
+	void CheckOwner();
+
+	float CheckDst = 200.0f;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const override;
+
+
+	//test
+
+	 // 타이밍  값을 알고싶다.
+	
+	//UFUNCTION()
+	//void OnRep_RotYAW(); // 접두어 암묵적인 규칙 값을 반영할 변수의 이름을 사용
+
+	//void DoRotationYaw();
+
+	//UFUNCTION()
+	//void OnRep_RotYAW2(); // 접두어 암묵적인 규칙 값을 반영할 변수의 이름을 사용
+
+	//void DoRotationYaw2();
 };

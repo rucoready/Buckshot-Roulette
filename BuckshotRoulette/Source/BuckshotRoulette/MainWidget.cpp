@@ -26,14 +26,19 @@ void UMainWidget::ButtonMeClick()
 {
 	UE_LOG(LogTemp,Warning,TEXT("MEClicked"));
 	ShootBang();
-	Bang->PlayerRot();
+	Bang->Player2Rot();
+	//Bang->SeverRPC_MoveMeShotGun();
+	//Bang->DoRotationYaw();
 }
 
 void UMainWidget::ButtonEnemyClick()
 {
 	UE_LOG(LogTemp, Warning, TEXT("EnemyClicked"));
 	ShootBang();
-	Bang->Player2Rot();
+	Bang->PlayerRot();
+	//Bang->SeverRPC_MoveEnemyShotGun();
+	//Bang->DoRotationYaw2();
+	
 }
 
 void UMainWidget::ButtonChangeTurnClick()

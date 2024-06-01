@@ -9,6 +9,9 @@
 #include "EngineUtils.h"
 #include <../../../../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraComponent.h>
 #include <../../../../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h>
+#include "Net/UnrealNetwork.h"
+#include "RulletPlayer.h"
+#include "EngineUtils.h"
 
 // Sets default values
 AShotGun::AShotGun()
@@ -76,6 +79,8 @@ void AShotGun::BeginPlay()
 
 	//SpawnLocation->SetVisibility(false);
 
+	//Shotgun->OnClicked.AddDynamic(this, &UMainWidget::);
+
 }
 
 // Called every frame
@@ -83,6 +88,8 @@ void AShotGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//PlayerRot();
+
+	CheckOwner();
 
 
 }
@@ -101,6 +108,7 @@ void AShotGun::RandomShot()
 			{
 				LoadLiveBullet();
 				UE_LOG(LogTemp, Log, TEXT("real bullet"));
+				SpawnLocation = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NS_hitimpact, SpawnLocation->GetComponentLocation(), SpawnLocation->GetComponentRotation(), FVector(2.0f));
 			}
 			else
 			{
@@ -112,6 +120,7 @@ void AShotGun::RandomShot()
 		{
 			LoadLiveBullet();
 			UE_LOG(LogTemp, Log, TEXT("single real bullet"));
+			SpawnLocation = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NS_hitimpact, SpawnLocation->GetComponentLocation(), SpawnLocation->GetComponentRotation(), FVector(2.0f));
 		}
 	}
 	else
@@ -168,6 +177,8 @@ void AShotGun::AddBlankBullet()
 void AShotGun::PlayerRot()
 {
 
+	//서버 RPC 
+	//SeverRPC_MoveMeShotGun();
 
 
 	//// 이동 속도를 설정합니다.
@@ -180,10 +191,14 @@ void AShotGun::PlayerRot()
 	//FVector NewLocation = FMath::Lerp(GetActorLocation(), TarVector2, MovementSpeed * GetWorld()->GetDeltaSeconds());
 	//FRotator Newrotation = FMath::Lerp(GetActorRotation(), TarRotar2, MovementSpeed * GetWorld()->GetDeltaSeconds());
 	// 새로운 위치로 플레이어를 이동
+	/*if (false == bHasClick)
+	{
+		return;
+	}*/
+	
+
 	SetActorLocation(TarVector2);
 	SetActorRotation(TarRotar2);
-
-	SpawnLocation = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NS_hitimpact, SpawnLocation->GetComponentLocation(), SpawnLocation->GetComponentRotation(), FVector(2.0f));
 
 	//SpawnLocation->SetVisibility(true);
 
@@ -225,8 +240,132 @@ void AShotGun::PlayerRot()
 // Enemy 버튼 누를시 실행 함수
 void AShotGun::Player2Rot()
 {
+	
+	//SeverRPC_MoveEnemyShotGun();
+	//SpawnLocation->SetVisibility(true);
 	SetActorLocation(TarVector);
 	SetActorRotation(TarRotar);
-	SpawnLocation = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NS_hitimpact, SpawnLocation->GetComponentLocation(), SpawnLocation->GetComponentRotation(), FVector(2.0f));
-	//SpawnLocation->SetVisibility(true);
+
 }
+
+//void AShotGun::SeverRPC_MoveMeShotGun_Implementation()
+//{
+//
+// 
+//	MultiRPC_MoveMeShotGun();
+//	SetOwner(this);
+//	UE_LOG(LogTemp, Warning, TEXT("1213124124"));
+//
+//
+//}
+//
+//void AShotGun::MultiRPC_MoveMeShotGun_Implementation()
+//{
+//	
+//	SetActorLocation(TarVector);
+//	SetActorRotation(TarRotar);
+//	UE_LOG(LogTemp, Warning, TEXT("999999999"));
+//	
+//	
+//}
+//
+//void AShotGun::SeverRPC_MoveEnemyShotGun_Implementation()
+//{
+//	ClientRPC_MoveEnemyShotGun();
+//	SetOwner(this);
+//}
+//
+//void AShotGun::ClientRPC_MoveEnemyShotGun_Implementation()
+//{
+//	SetActorLocation(TarVector2);
+//	SetActorRotation(TarRotar2);
+//}
+
+void AShotGun::CheckOwner()
+{
+	if (GetLocalRole() == ROLE_Authority)
+		//if (HasAuthority)
+	{
+
+		float minDist = CheckDst;
+		AActor* newOwner = nullptr;
+
+		// 주변의 주인공 ANetTestcharacter를 계속 검색하고 싶다.
+		for (TActorIterator<ARulletPlayer> it(GetWorld()); it; ++it)
+		{
+			AActor* otherActor = *it;
+			// 나와의 거리를 쟈서
+			float TempDist = otherActor->GetDistanceTo(this);
+
+			//만약 dist 가가깝다면 기억하ㅏ고
+			if (TempDist < minDist)
+			{
+				minDist = TempDist;
+				newOwner = otherActor;
+			}
+		}
+
+
+		// 가장 가까운 ANetTestcharacter를 newOnwer로 기억해서
+
+		// 만약 현재 내오너가 newOnwer와 다르다면
+		if (GetOwner() != newOwner)
+		{
+			// 나의 오너롤 하고 싶다.
+			SetOwner(newOwner);
+		}
+		DrawDebugSphere(GetWorld(), GetActorLocation(), CheckDst, 10, FColor::Red, 0, 0, 1);
+	}
+}
+
+void AShotGun::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AShotGun, TarVector);
+	DOREPLIFETIME(AShotGun, TarRotar);
+
+	DOREPLIFETIME(AShotGun, TarVector2);
+	DOREPLIFETIME(AShotGun, TarRotar2);
+}
+//
+//void AShotGun::OnRep_RotYAW()
+//{
+//	SetActorLocation(TarVector);
+//	SetActorRotation(TarRotar);
+//
+//}
+//
+//void AShotGun::DoRotationYaw()
+//{
+//	if (HasAuthority())
+//	{
+//		SetActorLocation(TarVector);
+//		SetActorRotation(TarRotar);
+//	}
+//	else
+//	{
+//		SetActorLocation(TarVector);
+//		SetActorRotation(TarRotar);
+//	}
+//}
+//
+//void AShotGun::OnRep_RotYAW2()
+//{
+//	SetActorLocation(TarVector);
+//	SetActorRotation(TarRotar);
+//}
+//
+//void AShotGun::DoRotationYaw2()
+//{
+//	if (HasAuthority())
+//	{
+//		SetActorLocation(TarVector2);
+//		SetActorRotation(TarRotar2);
+//	}
+//	else
+//	{
+//		SetActorLocation(TarVector2);
+//		SetActorRotation(TarRotar2);
+//	}
+//}
