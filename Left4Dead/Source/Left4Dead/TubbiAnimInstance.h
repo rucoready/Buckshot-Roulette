@@ -23,7 +23,7 @@ public:
 	class AGamePlayer* Me;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MySettings")
-	bool bHasPistol = false;
+	bool bHasShutgun = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MySettings", meta = (AllowPrivateAccess = "true"))
 	float MovementSpeed;
@@ -36,6 +36,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MySettings")
 	float Vertical;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MySettings")
+	float PitchAngle;
 
 	
 };

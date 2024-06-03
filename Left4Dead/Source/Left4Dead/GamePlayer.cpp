@@ -33,8 +33,8 @@ AGamePlayer::AGamePlayer()
 	GunComp->SetupAttachment(GetMesh(), TEXT("RightHandSocket"));
 
 	//ÀÓ½Ã°ª
-	GunComp->SetRelativeLocation(FVector(2.4, 19.44, -33.6));
-	GunComp->SetRelativeRotation(FRotator(0, 5.888, 0));
+	GunComp->SetRelativeLocation(FVector(0.204356, -0.785315, 0.226635));
+	GunComp->SetRelativeRotation(FRotator(25.425407 , -76.238422 , 111.825439 ));
 }
 
 
