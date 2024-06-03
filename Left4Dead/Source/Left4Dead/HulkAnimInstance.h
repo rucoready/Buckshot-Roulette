@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "HulkZombie.h"
 #include "HulkAnimInstance.generated.h"
 
 /**
@@ -19,7 +20,15 @@ public:
 		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mysettings")
 		class AHulkZombie* hulk;
 
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mysettings")
+		EEnemyState currentState;
+
 		virtual void NativeInitializeAnimation() override;
+
+		virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mysettings")
+		FVector moveDirection;
 
 private:
 	

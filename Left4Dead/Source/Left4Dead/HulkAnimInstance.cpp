@@ -11,3 +11,13 @@ void UHulkAnimInstance::NativeInitializeAnimation()
 	hulk = Cast<AHulkZombie>(GetOwningActor());
 
 }
+
+void UHulkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+{
+	Super::NativeUpdateAnimation(DeltaSeconds);
+
+	if(hulk != nullptr)
+	{
+		currentState = hulk->enemystate;
+	}
+}

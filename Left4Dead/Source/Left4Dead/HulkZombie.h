@@ -67,7 +67,11 @@ public:
 	float sightAngle = 30.0f;
 
 
+	UPROPERTY()
+	class UHulkAnimInstance* hulkAnim;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mysettings")
+	FVector moveDirection;
 
 
 private:

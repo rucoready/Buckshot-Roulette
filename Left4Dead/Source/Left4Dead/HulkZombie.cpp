@@ -6,6 +6,7 @@
 #include "GamePlayer.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Components/CapsuleComponent.h>
+#include "HulkAnimInstance.h"
 
 
 // Sets default values
@@ -33,6 +34,12 @@ void AHulkZombie::BeginPlay()
 	}
 
 	//GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	/*hulkAnim = Cast<UHulkAnimInstance>(GetMesh()->GetAnimInstance());
+	if(hulkAnim != nullptr)
+	{
+		hulkAnim->moveDirection = moveDirection;
+	}*/
 
 	currentHP = MaxHP;
 	
@@ -189,11 +196,19 @@ void AHulkZombie::Throw()
 
 void AHulkZombie::AttackDelay(float deltaSeconds)
 {
+
 	currentTime += deltaSeconds;
 	if(currentTime > attackDelayTime)
 	{
 		currentTime = 0;
 		enemystate = EEnemyState::ATTACK;
+	}
+	if(FVector::Distance(GetActorLocation(), target->GetActorLocation()) > attackDistance + 15.0f)
+	{
+		if(currentTime > attackDelayTime * 0.5f)
+		{ 
+			//enemystate == EEnemyState::MOVE;
+		}
 	}
 	
 }
@@ -245,6 +260,10 @@ void AHulkZombie::Die()
 {
 	FTimerHandle deadHandle;
 	GetWorldTimerManager().SetTimer(deadHandle,FTimerDelegate::CreateLambda([&](){Destroy();}), 3.0f, false);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	GetCharacterMovement()->DisableMovement();
 
 }
 
