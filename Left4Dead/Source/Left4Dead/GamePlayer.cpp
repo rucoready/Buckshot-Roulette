@@ -95,6 +95,7 @@ void AGamePlayer::OnIATakeShutgun(const FInputActionValue& value)
 	{
 		// 이미 총을 잡고 있던 상태
 		// 놓기
+		ReleaseShutGun();
 		UE_LOG(LogTemp, Warning, TEXT("ReleaseShutGun"));
 	}
 	else 
