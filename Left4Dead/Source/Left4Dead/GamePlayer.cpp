@@ -26,15 +26,19 @@ AGamePlayer::AGamePlayer()
     GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 
 	cameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("cameraComp"));
-	cameraComp->SetupAttachment(RootComponent);
-	cameraComp->SetRelativeLocation(FVector(20.0f, 0.0f, 60.0f));
+	cameraComp->SetupAttachment(GetMesh(), TEXT("HeadSocket"));
+	cameraComp->SetRelativeLocation(FVector(0.037446, -0.666934, 0.684705));
+	cameraComp->SetRelativeRotation(FRotator(85.976524, -57.796606, 32.503085));
+	cameraComp->SetWorldScale3D(FVector(0.01f));
+
+	cameraComp->bUsePawnControlRotation = true;
     
 	GunComp = CreateDefaultSubobject<USceneComponent>(TEXT("GunComp"));
 	GunComp->SetupAttachment(GetMesh(), TEXT("RightHandSocket"));
 
 	//임시값
-	GunComp->SetRelativeLocation(FVector(0.204356, -0.785315, 0.226635));
-	GunComp->SetRelativeRotation(FRotator(25.425407 , -76.238422 , 111.825439 ));
+	GunComp->SetRelativeLocation(FVector(0.119616, -1.511154, -0.165771));
+	GunComp->SetRelativeRotation(FRotator(-1.533124, -100.148471, 108.526516 ));
 }
 
 
@@ -42,7 +46,7 @@ void AGamePlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
-
+	
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -55,6 +59,8 @@ void AGamePlayer::BeginPlay()
 	// 레벨의 모든 AActor들 중에 Tag가 "Shutgun"인 것을 찾아서 
 	//PistolList
 	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AActor::StaticClass(), TEXT("Shutgun"), shoutgunList);
+
+	
 }
 
 
@@ -103,6 +109,15 @@ void AGamePlayer::OnIATakeShutgun(const FInputActionValue& value)
 		// 안잡고 있던 상태
 		// 잡기
 		TakeShutGun();
+	}
+}
+
+void AGamePlayer::OnIAFireShutgun(const FInputActionValue& value)
+{
+	if (bHasShutgun)
+	{
+		
+		FireShutgun();
 	}
 }
 
@@ -162,6 +177,35 @@ void AGamePlayer::DetachShutGun(AActor* shutgun)
 	}
 }
 
+void AGamePlayer::FireShutgun()
+{
+
+	// 카메라 위치에서 카메라 앞방향으로 LineTrace를 해서 닿은 곳에 VFX를 표현하고싶다.
+	FHitResult OutHit;
+	FVector Start = cameraComp->GetComponentLocation();
+	FVector End = Start + cameraComp->GetForwardVector() * 100000;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, Params);
+
+	PlayShutGunFireMontage();
+
+	if (bHit)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletParticle, OutHit.ImpactPoint);
+	}
+}
+
+
+
+
+
+void AGamePlayer::PlayShutGunFireMontage()
+{
+	PlayAnimMontage(shutgunMT);
+}
+
 
 
 
@@ -182,6 +226,9 @@ void AGamePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AGamePlayer::StopJumping);
 
 		EnhancedInputComponent->BindAction(iA_TakeShutGun, ETriggerEvent::Started, this, &AGamePlayer::OnIATakeShutgun);
+
+		EnhancedInputComponent->BindAction(iA_FireShutgun, ETriggerEvent::Started, this, &AGamePlayer::OnIAFireShutgun);
+		
     }
     
 
@@ -206,7 +253,7 @@ void AGamePlayer::move(const FInputActionValue& Value)
 
 		// 무브먼트 x y
 		AddMovementInput(ForwardDirection, MovementVector.Y);
-		//안됨>
+		// 상하 움직임
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
 }

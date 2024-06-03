@@ -29,6 +29,8 @@ void UTubbiAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	// 주인공이 총을 집었다는 정보를 가져오고싶다.
 	bHasShutgun = Me->bHasShutgun;
+	
+	
 
 	// 주인공의 AimRotation의 Pitch값을 기억하고싶다. (0~360=> -180 ~ 180)
 	PitchAngle = Me->GetBaseAimRotation().GetNormalized().Pitch;

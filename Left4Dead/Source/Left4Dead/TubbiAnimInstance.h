@@ -25,6 +25,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MySettings")
 	bool bHasShutgun = false;
 
+	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MySettings", meta = (AllowPrivateAccess = "true"))
 	float MovementSpeed;
 

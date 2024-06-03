@@ -38,6 +38,13 @@ public:
 
 	void DetachShutGun(AActor* shutgun);
 
+	void FireShutgun();
+
+	UFUNCTION()
+	void PlayShutGunFireMontage();
+
+	
+
 	class USkeletalMesh* tubbiMesh;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
@@ -49,6 +56,15 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
 	class UInputAction* iA_TakeShutGun;
+
+	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
+	class UAnimMontage* shutgunMT;
+
+	UPROPERTY(EditDefaultsOnly, Category = MySettings)
+	class UInputAction* iA_FireShutgun;
+
+	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
+	class UParticleSystem* bulletParticle;
 
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MySettings", meta = (AllowPrivateAccess = "true"))
@@ -80,6 +96,8 @@ public:
 	TArray<AActor*> shoutgunList;
 
 	void OnIATakeShutgun(const FInputActionValue& value);
+
+	void OnIAFireShutgun(const FInputActionValue& value);
 
 	void AttachShutgun(AActor* ShutGun);
 };
