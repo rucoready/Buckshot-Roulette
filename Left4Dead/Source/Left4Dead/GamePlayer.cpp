@@ -7,7 +7,10 @@
 #include "InputMappingContext.h"
 #include "Camera/CameraComponent.h"
 #include "InputAction.h"
+#include "ShutGunActor.h"
 #include "Kismet/GameplayStatics.h"
+#include <../../../../../../../Source/Runtime/Engine/Classes/GameFramework/Character.h>
+#include <../../../../../../../Source/Runtime/Engine/Public/EngineUtils.h>
 
 // Sets default values
 AGamePlayer::AGamePlayer()
@@ -39,6 +42,8 @@ AGamePlayer::AGamePlayer()
 	//임시값
 	GunComp->SetRelativeLocation(FVector(0.119616, -1.511154, -0.165771));
 	GunComp->SetRelativeRotation(FRotator(-1.533124, -100.148471, 108.526516 ));
+
+	
 }
 
 
@@ -60,7 +65,17 @@ void AGamePlayer::BeginPlay()
 	//PistolList
 	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AActor::StaticClass(), TEXT("Shutgun"), shoutgunList);
 
-	
+	for (TActorIterator<AShutGunActor> It(GetWorld()); It; ++It)
+	{
+		shutgunInstance = *It;
+		break;
+	}
+
+	if (shutgunInstance)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("FoundShutgun2"));
+
+	}
 }
 
 
@@ -179,6 +194,8 @@ void AGamePlayer::DetachShutGun(AActor* shutgun)
 
 void AGamePlayer::FireShutgun()
 {
+	
+	shutgunInstance->FireShutGun();
 
 	// 카메라 위치에서 카메라 앞방향으로 LineTrace를 해서 닿은 곳에 VFX를 표현하고싶다.
 	FHitResult OutHit;
@@ -195,6 +212,8 @@ void AGamePlayer::FireShutgun()
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletParticle, OutHit.ImpactPoint);
 	}
+
+	
 }
 
 

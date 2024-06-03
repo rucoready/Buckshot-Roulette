@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "ShutgunBulletActor.h"
+#include "ShutGunActor.h"
 #include "GamePlayer.generated.h"
 
 UCLASS()
@@ -43,7 +45,7 @@ public:
 	UFUNCTION()
 	void PlayShutGunFireMontage();
 
-	
+	AShutGunActor* shutgunInstance;
 
 	class USkeletalMesh* tubbiMesh;
 
@@ -95,9 +97,12 @@ public:
 	UPROPERTY()
 	TArray<AActor*> shoutgunList;
 
+
 	void OnIATakeShutgun(const FInputActionValue& value);
 
 	void OnIAFireShutgun(const FInputActionValue& value);
 
 	void AttachShutgun(AActor* ShutGun);
+
+	
 };

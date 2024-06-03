@@ -26,4 +26,16 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class UStaticMeshComponent* shutGunComp;
 
+	UPROPERTY(EditAnywhere, Category="MySettings")
+	class USceneComponent* sceneComp;
+
+	AShutGunActor* bulletInstance;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	TSubclassOf<class AShutgunBulletActor> bulletActor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
+	class UParticleSystem* bulletParticle;
+
+	void FireShutGun();
 };
