@@ -103,6 +103,9 @@ private:
 	UPROPERTY() 
 	class AActor* target;
 
+	UPROPERTY() 
+	class APlayerController* players;
+
 	int32 currentHP = 0;
 	int32 MaxHP = 300;
 

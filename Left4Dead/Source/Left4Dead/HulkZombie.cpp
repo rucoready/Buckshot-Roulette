@@ -38,6 +38,8 @@ void AHulkZombie::BeginPlay()
 	// 기본상태를 IDLE 상태로 초기화 한다.
 	enemystate = EEnemyState::IDLE;
 
+
+
 	for(TActorIterator<AGamePlayer> player(GetWorld()); player; ++player)
 	{
 		target = *player;
