@@ -85,7 +85,7 @@ void AShutGunActor::FireShutGun()
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-    for (int32 i = 0; i < 40; ++i)
+    for (int32 i = 0; i < 10; ++i)
     {
         FVector SpawnLocation = sceneComp->GetComponentLocation();
 

@@ -7,6 +7,7 @@
 #include <../../../../../../../Source/Runtime/Engine/Classes/Components/SceneComponent.h>
 #include <../../../../../../../Source/Runtime/Engine/Public/EngineUtils.h>
 #include "ShutGunActor.h"
+#include <../../../../../../../Source/Runtime/Engine/Classes/Components/BoxComponent.h>
 
 // Sets default values
 AShutgunBulletActor::AShutgunBulletActor()
@@ -25,10 +26,12 @@ AShutgunBulletActor::AShutgunBulletActor()
 	{
 		bulletMesh->SetStaticMesh(bulletmeshComp.Object);
 	}
-	bulletMesh->SetWorldScale3D(FVector(3.0f));
+	bulletMesh->SetWorldScale3D(FVector(8.0f));
 
 
-    
+    boxComp=CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
+    boxComp->SetupAttachment(bulletMesh);
+    boxComp->SetBoxExtent(FVector(1.2, 1.0, 1.0));
 
 }
 
@@ -52,7 +55,7 @@ void AShutgunBulletActor::BeginPlay()
 
 		
 	}
-	
+    boxComp->OnComponentBeginOverlap.AddDynamic(this, &AShutgunBulletActor::OnBeginOverlapBullets);
 }
 
 // Called every frame
@@ -83,7 +86,7 @@ void AShutgunBulletActor::PitchingRandom(float DeltaTime)
         FVector ForwardVector = GetActorForwardVector();
 
         // 랜덤 오프셋 생성
-        FVector RandomOffset = FVector(FMath::RandRange(-0.5f, 0.5f), FMath::RandRange(0.5f, 0.5f), FMath::RandRange(-0.5f, 0.5f));
+        FVector RandomOffset = FVector(FMath::RandRange(-0.1f, 0.1f), FMath::RandRange(-0.1f, 0.1f), FMath::RandRange(-0.1f, 0.1f));
 
         // ForwardVector에 랜덤 오프셋 추가
         RandomLocationBullet = ForwardVector + RandomOffset;
@@ -106,5 +109,19 @@ void AShutgunBulletActor::PitchingRandom(float DeltaTime)
         SetActorRotation(NewRotation, ETeleportType::None); // 회전만 업데이트하므로 이동 없이 회전만 적용
     }
 }
+
+void AShutgunBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+    if (OtherActor->GetActorNameOrLabel().Contains("BP_Wall") || OtherActor->GetActorNameOrLabel().Contains("Cube") || OtherActor->GetActorNameOrLabel().Contains("Floor")||OtherActor->GetActorNameOrLabel().Contains("BP_Hulk"))
+    {
+        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletExplosionPX, GetActorLocation(), GetActorRotation());
+
+
+        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletSplashPX, GetActorLocation(), GetActorRotation());
+        Destroy();
+    }
+}
+
+
 
 
