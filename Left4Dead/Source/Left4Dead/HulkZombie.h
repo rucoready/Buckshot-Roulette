@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "HulkZombie.generated.h"
 
+class UPawnSensingComponent;
+
 UENUM(BlueprintType)
 enum class EEnemyState : uint8
 {
@@ -41,7 +43,23 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
+	// Ai 컨트롤러 관련
+	UPROPERTY()
+	class AAIController* ZombieController;
+
+	UFUNCTION()
+	void PawnSeen(APawn* SeenActor);
+
+	UPROPERTY(EditAnywhere, Category = "Mysettings" , BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	AActor* PatrolTarget;
+
+	UPROPERTY(VisibleAnywhere)
+	UPawnSensingComponent* PawnSensing;
+
+	
+
+
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Mysettings")
 	EEnemyState enemystate = EEnemyState::IDLE;
 
 	float currentTime;
@@ -55,7 +73,7 @@ public:
 	FVector HitDirection;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
-	float traceSpeed = 750.0f;
+	float traceSpeed = 1000.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
 	float attackDistance = 170.0f;
@@ -73,6 +91,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mysettings")
 	FVector moveDirection;
 
+
+	void CheckOwner();
+
+	float CheckDst = 200.0f;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
 

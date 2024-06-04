@@ -7,7 +7,11 @@
 #include <../../../../../../../Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Components/CapsuleComponent.h>
 #include "HulkAnimInstance.h"
-
+#include "Net/UnrealNetwork.h"
+#include <../../../../../../../Source/Runtime/AIModule/Classes/AIController.h>
+#include "NavigationSystem.h"
+#include "Navigation/PathFollowingComponent.h"
+#include <../../../../../../../Source/Runtime/AIModule/Classes/Perception/PawnSensingComponent.h>
 
 // Sets default values
 AHulkZombie::AHulkZombie()
@@ -17,6 +21,12 @@ AHulkZombie::AHulkZombie()
 
 
 	GetCapsuleComponent()->SetCollisionProfileName(FName("EnemyPreset"));
+
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("Pawnsensing"));
+	PawnSensing->SightRadius = 250.f;
+	PawnSensing->HearingThreshold = 200.f;
+	PawnSensing->LOSHearingThreshold = 200.f;
+	PawnSensing->SetPeripheralVisionAngle(27.f);
 
 }	
 
@@ -40,6 +50,23 @@ void AHulkZombie::BeginPlay()
 	{
 		hulkAnim->moveDirection = moveDirection;
 	}*/
+
+	ZombieController = Cast<AAIController>(GetController());
+	if(ZombieController && PatrolTarget)
+	{
+		FAIMoveRequest MoveRequest;
+		MoveRequest.SetGoalActor(PatrolTarget);
+		MoveRequest.SetAcceptanceRadius(15.f);
+		FNavPathSharedPtr navPath;
+		ZombieController->MoveTo(MoveRequest, &navPath);
+		TArray<FNavPathPoint>& Pathpoints = navPath->GetPathPoints();
+		for (auto& Point : Pathpoints)
+		{
+			const FVector& Location = Point.Location;
+			DrawDebugSphere(GetWorld(), Location, 12.f, 12, FColor::Green, false, 10.f);
+		}
+	}
+
 
 	currentHP = MaxHP;
 	
@@ -92,6 +119,52 @@ void AHulkZombie::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 }
 
+
+
+void AHulkZombie::PawnSeen(APawn* SeenActor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Pawn seen!!!"));
+}
+
+void AHulkZombie::CheckOwner()
+{
+
+	
+		//if (GetLocalRole() == ROLE_Authority)
+		//	//if (HasAuthority)
+		//{
+
+		//	float minDist = CheckDst;
+		//	AActor* newOwner = nullptr;
+
+		//	// 주변의 주인공 ANetTestcharacter를 계속 검색하고 싶다.
+		//	for (TActorIterator<AGamePlayer> it(GetWorld()); it; ++it)
+		//	{
+		//		AActor* otherActor = *it;
+		//		// 나와의 거리를 쟈서
+		//		float TempDist = otherActor->GetDistanceTo(this);
+
+		//		//만약 dist 가가깝다면 기억하ㅏ고
+		//		if (TempDist < minDist)
+		//		{
+		//			minDist = TempDist;
+		//			newOwner = otherActor;
+		//		}
+		//	}
+
+
+		//	// 가장 가까운 ANetTestcharacter를 newOnwer로 기억해서
+
+		//	// 만약 현재 내오너가 newOnwer와 다르다면
+		//	if (GetOwner() != newOwner)
+		//	{
+		//		// 나의 오너롤 하고 싶다.
+		//		SetOwner(newOwner);
+		//	}
+		//	DrawDebugSphere(GetWorld(), GetActorLocation(), CheckDst, 10, FColor::Red, 0, 0, 1);
+		//}
+	
+}
 
 
 void AHulkZombie::Idle(float deltaSeconds)
@@ -162,7 +235,7 @@ void AHulkZombie::Move(float deltaSeconds)
 	}
 	else
 	{
-		enemystate = EEnemyState::ATTACK;
+		enemystate = EEnemyState::ATTACKDELAY;
 		UE_LOG(LogTemp, Warning, TEXT("12222222"));
 	}
 }
@@ -205,7 +278,7 @@ void AHulkZombie::AttackDelay(float deltaSeconds)
 	}
 	if(FVector::Distance(GetActorLocation(), target->GetActorLocation()) > attackDistance + 15.0f)
 	{
-		if(currentTime > attackDelayTime * 0.5f)
+		if(currentTime > attackDelayTime * 20.0f)
 		{ 
 			//enemystate == EEnemyState::MOVE;
 		}
@@ -264,6 +337,15 @@ void AHulkZombie::Die()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	GetCharacterMovement()->DisableMovement();
+
+}
+
+
+void AHulkZombie::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AHulkZombie , enemystate);
 
 }
 
