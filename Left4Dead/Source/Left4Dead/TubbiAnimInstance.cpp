@@ -27,8 +27,12 @@ void UTubbiAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	// Me의 이동 속도와 Me의 오른쪽방향을 Dot 해서 Horizontal에 대입하고싶다.
 	Horizontal = FVector::DotProduct(vel, Me->GetActorRightVector());
 
-	// 주인공이 총을 집었다는 정보를 가져오고싶다.
+	// 주인공이 총을 집었다는 정보를 가져오고싶다 < 샷건 >
 	bHasShutgun = Me->bHasShutgun;
+
+	// 주인공이 총을 집었다는 정보를 가져오고싶다 < 라이플 >
+	bHasRifle = Me->bHasrifle;
+	
 	
 	
 

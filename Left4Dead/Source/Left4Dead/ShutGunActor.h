@@ -29,6 +29,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="MySettings")
 	class USceneComponent* sceneComp;
 
+	UPROPERTY(EditAnywhere, Category="MySettings")
+	class USceneComponent* sceneComp2;
+
 	AShutGunActor* bulletInstance;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
@@ -38,4 +41,6 @@ public:
 	class UParticleSystem* bulletParticle;
 
 	void FireShutGun();
+
+	
 };
