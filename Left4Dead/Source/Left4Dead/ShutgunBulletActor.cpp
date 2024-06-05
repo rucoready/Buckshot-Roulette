@@ -37,7 +37,7 @@ AShutgunBulletActor::AShutgunBulletActor()
     bloodNA = CreateDefaultSubobject<UNiagaraComponent>(TEXT("bloodNA"));
     bloodNA->SetupAttachment(RootComponent);
 
-    static ConstructorHelpers::FObjectFinder<UNiagaraSystem>fx(TEXT("/Script/Niagara.NiagaraSystem'/Game/Left4Dead/Particles/NA_BigBlood.NA_BigBlood'"));
+    static ConstructorHelpers::FObjectFinder<UNiagaraSystem>fx(TEXT("/Script/Niagara.NiagaraSystem'/Game/Left4Dead/Particles/NA_Blood3.NA_Blood3'"));
     if (fx.Succeeded())
     {
         bloodNA->SetAsset(fx.Object);
@@ -144,7 +144,7 @@ void AShutgunBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedC
         Destroy();
     }
 
-    if (OtherActor->GetActorNameOrLabel().Contains("BP_Hulk"))
+    if (OtherActor->GetActorNameOrLabel().Contains("BP_Hulk") || OtherActor->GetActorNameOrLabel().Contains("BP_GamePlayer"))
     {
         UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), bloodNA->GetAsset(), GetActorLocation(), GetActorRotation());
         Destroy();

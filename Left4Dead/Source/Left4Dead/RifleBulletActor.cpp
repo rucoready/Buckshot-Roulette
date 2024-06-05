@@ -19,7 +19,7 @@ ARifleBulletActor::ARifleBulletActor()
 
 	bulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("bulletMesh"));
 	// bullet 메시를 적용
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> bulletmeshComp(TEXT("/Script/Engine.StaticMesh'/Game/Left4Dead/WeaponsAsset/Bullet/Bullet.Bullet'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> bulletmeshComp(TEXT("/Script/Niagara.NiagaraSystem'/Game/Left4Dead/Particles/NA_Blood3.NA_Blood3'"));
 	if (bulletmeshComp.Succeeded())
 	{
 		bulletMesh->SetStaticMesh(bulletmeshComp.Object);
@@ -98,7 +98,7 @@ void ARifleBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedCom
 		Destroy();
 	}
 
-	if (OtherActor->GetActorNameOrLabel().Contains("BP_Hulk"))
+	if (OtherActor->GetActorNameOrLabel().Contains("BP_Hulk") || OtherActor->GetActorNameOrLabel().Contains("BP_GamePlayer"))
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), bloodNA->GetAsset(), GetActorLocation(), GetActorRotation());
 		Destroy();
