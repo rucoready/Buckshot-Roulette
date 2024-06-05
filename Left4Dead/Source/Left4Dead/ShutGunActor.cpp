@@ -7,7 +7,6 @@
 #include <../../../../../../../Source/Runtime/Engine/Public/EngineUtils.h>
 #include "ShutgunBulletActor.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h>
-#include <../../../../../../../Source/Runtime/Engine/Classes/Particles/ParticleSystemComponent.h>
 
 // Sets default values
 AShutGunActor::AShutGunActor()
@@ -34,11 +33,6 @@ AShutGunActor::AShutGunActor()
 	sceneComp->SetupAttachment(shutGunComp);
 
 	sceneComp->SetRelativeLocation(FVector(187.0, 0, 23.5));
-
-    sceneComp2 = CreateDefaultSubobject<USceneComponent>(TEXT("sceneComp2"));
-    sceneComp2->SetupAttachment(shutGunComp);
-
-    sceneComp2->SetRelativeLocation(FVector(206.451509, 0, 22.7989));
 }
 
 // Called when the game starts or when spawned
@@ -69,12 +63,24 @@ void AShutGunActor::Tick(float DeltaTime)
 
 void AShutGunActor::FireShutGun()
 {
-	UParticleSystemComponent* ParticleComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletParticle, sceneComp->GetComponentLocation(), sceneComp->GetComponentRotation());
-	if (ParticleComp)
-	{
-		ParticleComp->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
-	}
-	
+// 	FActorSpawnParameters SpawnParams;
+// 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+// 
+// 	for (int32 i = 0; i < 40; ++i)
+// 	{
+// 
+// 
+// 		FVector SpawnLocation = sceneComp->GetComponentLocation();
+// 
+// 		// 변환을 설정
+// 		FTransform spawnTrans;
+// 		spawnTrans.SetLocation(SpawnLocation);
+// 		spawnTrans.SetRotation(sceneComp->GetComponentQuat());
+// 
+// 		// rock1을 스폰
+// 		AShutgunBulletActor* bullet = GetWorld()->SpawnActor<AShutgunBulletActor>(bulletActor, spawnTrans, SpawnParams);
+// 
+// 	}
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -90,9 +96,32 @@ void AShutGunActor::FireShutGun()
 
         // 총알 스폰
         AShutgunBulletActor* bullet = GetWorld()->SpawnActor<AShutgunBulletActor>(bulletActor, spawnTrans, SpawnParams);
+
+        if (bullet)
+        {
+            // 총알이 생성된 위치에서 시작하는 라인 트레이스 실행
+            FHitResult OutHit;
+            FVector Start = bullet->GetActorLocation();
+            FVector End = Start + bullet->GetActorForwardVector() * 100000; // 적절한 길이로 변경
+            FCollisionQueryParams Params;
+            Params.AddIgnoredActor(this);
+            Params.AddIgnoredActor(bullet); // 총알을 무시
+
+            bool bHit = GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, Params);
+
+            if (bHit)
+            {
+                // 총알이 충돌하지 않았을 때에만 충돌 지점에 파티클 생성
+                UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletParticle, OutHit.ImpactPoint);
+            }
+            else
+            {
+                // 라인 트레이스가 성공하지 않았을 때에도 파티클 생성
+                UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletParticle, End);
+            }
+        }
     }
 
 	
 }
-
 

@@ -9,7 +9,6 @@
 #include "InputAction.h"
 #include "ShutGunActor.h"
 #include "Kismet/GameplayStatics.h"
-#include "AK47Actor.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/GameFramework/Character.h>
 #include <../../../../../../../Source/Runtime/Engine/Public/EngineUtils.h>
 
@@ -28,7 +27,6 @@ AGamePlayer::AGamePlayer()
     GetMesh()->SetWorldScale3D(FVector(60.0f));
     GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
     GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
-	
 
 	cameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("cameraComp"));
 	cameraComp->SetupAttachment(GetMesh(), TEXT("HeadSocket"));
@@ -39,17 +37,11 @@ AGamePlayer::AGamePlayer()
 	cameraComp->bUsePawnControlRotation = true;
     
 	GunComp = CreateDefaultSubobject<USceneComponent>(TEXT("GunComp"));
-	GunComp->SetupAttachment(GetMesh(), TEXT("LeftHandSocket"));
+	GunComp->SetupAttachment(GetMesh(), TEXT("RightHandSocket"));
 
 	//임시값
-	GunComp->SetRelativeLocation(FVector(0.329337, -0.405106, -0.055528));
-	GunComp->SetRelativeRotation(FRotator(-135.029408, -3.303645, -9.583412));
-
-	GunComp2 = CreateDefaultSubobject<USceneComponent>(TEXT("GunComp2"));
-	GunComp2->SetupAttachment(GetMesh(), TEXT("LeftHandSocket"));
-
-	GunComp2->SetRelativeLocation(FVector(-0.283947, -0.355662, -0.039199));
-	GunComp2->SetRelativeRotation(FRotator(5.965644, -44.5371, -5.559182));
+	GunComp->SetRelativeLocation(FVector(0.119616, -1.511154, -0.165771));
+	GunComp->SetRelativeRotation(FRotator(-1.533124, -100.148471, 108.526516 ));
 
 	
 }
@@ -59,7 +51,7 @@ void AGamePlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	UE_LOG(LogTemp,Warning,TEXT("TestBeginPlay"));
+	
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -70,11 +62,8 @@ void AGamePlayer::BeginPlay()
 	}
 
 	// 레벨의 모든 AActor들 중에 Tag가 "Shutgun"인 것을 찾아서 
-	// //라이플도
 	//PistolList
 	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AActor::StaticClass(), TEXT("Shutgun"), shoutgunList);
-
-	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AActor::StaticClass(), TEXT("Rifle"), rifleList);
 
 	for (TActorIterator<AShutGunActor> It(GetWorld()); It; ++It)
 	{
@@ -82,13 +71,11 @@ void AGamePlayer::BeginPlay()
 		break;
 	}
 
-	for (TActorIterator<AAK47Actor> It2(GetWorld()); It2; ++It2)
+	if (shutgunInstance)
 	{
-		rifleInstance = *It2;
-		break;
-	}
+		UE_LOG(LogTemp,Warning,TEXT("FoundShutgun2"));
 
-	
+	}
 }
 
 
@@ -116,29 +103,11 @@ void AGamePlayer::look(const FInputActionValue& Value)
 
 void AGamePlayer::AttachShutgun(AActor* ShutGun)
 {
-	if (ShutGun)
-	{
-		UStaticMeshComponent* meshComp = ShutGun->GetComponentByClass<UStaticMeshComponent>();
+	UStaticMeshComponent* meshComp = ShutGun->GetComponentByClass<UStaticMeshComponent>();
 
-		meshComp->SetSimulatePhysics(false);
+	meshComp->SetSimulatePhysics(false);
 
-		meshComp->AttachToComponent(GunComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	}
-
-
-	
-}
-
-void AGamePlayer::AttachRifle(AActor* Rifle)
-{
-		if (Rifle)
-		{
-		 	USkeletalMeshComponent* meshComp2 = Rifle->GetComponentByClass<USkeletalMeshComponent>();
-		 
-		 	meshComp2->SetSimulatePhysics(false);
-		 
-		 	meshComp2->AttachToComponent(GunComp2, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		}
+	meshComp->AttachToComponent(GunComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 void AGamePlayer::OnIATakeShutgun(const FInputActionValue& value)
@@ -158,44 +127,14 @@ void AGamePlayer::OnIATakeShutgun(const FInputActionValue& value)
 	}
 }
 
-void AGamePlayer::OnIATakeRifle(const FInputActionValue& value)
-{
-	if (bHasrifle)
-	{
-		// 이미 총을 잡고 있던 상태
-		// 놓기
-		ReleaseRifle();
-	}
-	else
-	{
-		// 안잡고 있던 상태
-		// 잡기
-		TakeRifle();
-	}
-}
-
 void AGamePlayer::OnIAFireShutgun(const FInputActionValue& value)
 {
 	if (bHasShutgun)
 	{
+		
 		FireShutgun();
 	}
 }
-
-void AGamePlayer::OnIARifleReload(const FInputActionValue& value)
-{
-	rifleInstance->PlayReloadAS();
-}
-
-void AGamePlayer::OnIAFireRifle(const FInputActionValue& value)
-{
-	if (bHasrifle)
-	{
-		FireRifle();
-	}
-}
-
-
 
 
 
@@ -227,34 +166,6 @@ void AGamePlayer::TakeShutGun()
 	}
 }
 
-void AGamePlayer::TakeRifle()
-{
-	UE_LOG(LogTemp, Warning, TEXT("CallTakeRifle"));
-	for (auto rifle : rifleList)
-	{
-		// 만약 soutgun의 오너가 있으면 스킵
-		if (rifle->GetOwner() != nullptr)
-			continue;
-		// 거리 바깥이면(ShutGunSearchDist) 스킵
-		float dist = rifle->GetDistanceTo(this);
-		if (dist > ShutGunSearchDist)
-			continue;
-
-		// 그 rifle을 OwnedRifle로 하고
-		OwnedRifle = rifle;
-		// OwnedRifle의 오너를 나로 하고
-		OwnedRifle->SetOwner(this);
-		// bHasrifle을 true 하고싶다.
-		bHasrifle = true;
-
-		// 손에 붙이고싶다.
-		AttachRifle(rifle);
-
-		// 반복문을 종료하고싶다.
-		break;
-	}
-}
-
 void AGamePlayer::ReleaseShutGun()
 {
 	if (OwnedShutgun)
@@ -267,21 +178,9 @@ void AGamePlayer::ReleaseShutGun()
 	}
 }
 
-void AGamePlayer::ReleaseRifle()
-{
-	if (OwnedRifle)
-	{
-		DetachRifle(OwnedRifle);
-
-		bHasrifle = false;
-		OwnedRifle->SetOwner(nullptr);
-		OwnedRifle = nullptr;
-	}
-}
-
 void AGamePlayer::DetachShutGun(AActor* shutgun)
 {
-	
+	// 구현!!
 	// 메시 찾고
 	UStaticMeshComponent* meshComp = shutgun->GetComponentByClass<UStaticMeshComponent>();
 	if (meshComp)
@@ -293,50 +192,27 @@ void AGamePlayer::DetachShutGun(AActor* shutgun)
 	}
 }
 
-void AGamePlayer::DetachRifle(AActor* rifle)
-{
-	
-	// 메시 찾고
-	USkeletalMeshComponent* meshComp2 = rifle->GetComponentByClass<USkeletalMeshComponent>();
-	if (meshComp2)
-	{
-		// 물리 켜고
-		meshComp2->SetSimulatePhysics(true);
-		// 디테치!!
-		meshComp2->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
-	}
-
-	
-}
-
 void AGamePlayer::FireShutgun()
 {
 	
 	shutgunInstance->FireShutGun();
+
+	// 카메라 위치에서 카메라 앞방향으로 LineTrace를 해서 닿은 곳에 VFX를 표현하고싶다.
+	FHitResult OutHit;
+	FVector Start = cameraComp->GetComponentLocation();
+	FVector End = Start + cameraComp->GetForwardVector() * 100000;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, Params);
+
 	PlayShutGunFireMontage();
 
-// 	카메라 위치에서 카메라 앞방향으로 LineTrace를 해서 닿은 곳에 VFX를 표현하고싶다.
-// 		FHitResult OutHit;
-// 		FVector Start = cameraComp->GetComponentLocation();
-// 		FVector End = Start + cameraComp->GetForwardVector() * 100000;
-// 		FCollisionQueryParams Params;
-// 		Params.AddIgnoredActor(this);
-// 	
-// 		bool bHit = GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, Params);
-// 	
-// 		PlayShutGunFireMontage();
-// 	
-// 		if (bHit)
-// 		{
-// 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletParticle, OutHit.ImpactPoint);
-// 		}
+	if (bHit)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletParticle, OutHit.ImpactPoint);
+	}
 
-	
-}
-
-void AGamePlayer::FireRifle()
-{
-	rifleInstance->FireRifle();
 	
 }
 
@@ -369,13 +245,8 @@ void AGamePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AGamePlayer::StopJumping);
 
 		EnhancedInputComponent->BindAction(iA_TakeShutGun, ETriggerEvent::Started, this, &AGamePlayer::OnIATakeShutgun);
-		EnhancedInputComponent->BindAction(iA_Takerifle, ETriggerEvent::Started, this, &AGamePlayer::OnIATakeRifle);
-
 
 		EnhancedInputComponent->BindAction(iA_FireShutgun, ETriggerEvent::Started, this, &AGamePlayer::OnIAFireShutgun);
-		EnhancedInputComponent->BindAction(iA_FireRifle, ETriggerEvent::Started, this, &AGamePlayer::OnIAFireRifle);
-
-		EnhancedInputComponent->BindAction(iA_RifleReload, ETriggerEvent::Started, this, &AGamePlayer::OnIARifleReload);
 		
     }
     

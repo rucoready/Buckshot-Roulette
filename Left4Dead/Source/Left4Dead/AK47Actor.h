@@ -25,29 +25,4 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="MySettings")
 	class USkeletalMeshComponent* ak47Mesh;
-
-	void FireRifle();
-
-	UPROPERTY(EditAnywhere, Category="MySettings")
-	class USceneComponent* sceneComp;
-
-	UPROPERTY(EditAnywhere, Category="MySettings")
-	class USceneComponent* sceneComp2;
-
-	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
-	class UParticleSystem* bulletParticle;
-
-	UPROPERTY(EditAnywhere, Category = "MySettings")
-	TSubclassOf<class ARifleBulletActor> bulletActor;
-
-	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
-	class UAnimMontage* FireAKMT;
-
-	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
-	class UAnimSequence* FireAKAnimation;
-
-	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
-	class UAnimSequence* reloadAKAnimation;
-
-	void PlayReloadAS();
 };

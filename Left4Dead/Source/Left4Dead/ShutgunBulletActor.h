@@ -58,9 +58,6 @@ public:
 
 	FVector ShutgunSceneComponentLocation;
 
-	float bulletSpeed = 6000.0f;
+	float bulletSpeed = 5500.0f;
 
-
-	UPROPERTY(EditAnywhere, Category = "MySettings")
-	class UNiagaraComponent* bloodNA;
 };

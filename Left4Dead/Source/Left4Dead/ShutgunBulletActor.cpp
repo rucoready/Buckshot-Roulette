@@ -7,8 +7,6 @@
 #include <../../../../../../../Source/Runtime/Engine/Classes/Components/SceneComponent.h>
 #include <../../../../../../../Source/Runtime/Engine/Public/EngineUtils.h>
 #include "ShutGunActor.h"
-#include "NiagaraComponent.h"
-#include <../../../../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Components/BoxComponent.h>
 
 // Sets default values
@@ -34,15 +32,7 @@ AShutgunBulletActor::AShutgunBulletActor()
     boxComp=CreateDefaultSubobject<UBoxComponent>(TEXT("boxComp"));
     boxComp->SetupAttachment(bulletMesh);
     boxComp->SetBoxExtent(FVector(1.2, 1.0, 1.0));
-    bloodNA = CreateDefaultSubobject<UNiagaraComponent>(TEXT("bloodNA"));
-    bloodNA->SetupAttachment(RootComponent);
 
-    static ConstructorHelpers::FObjectFinder<UNiagaraSystem>fx(TEXT("/Script/Niagara.NiagaraSystem'/Game/Left4Dead/Particles/NA_BigBlood.NA_BigBlood'"));
-    if (fx.Succeeded())
-    {
-        bloodNA->SetAsset(fx.Object);
-    }
-    bloodNA->SetAutoActivate(false);
 }
 
 
@@ -59,7 +49,7 @@ void AShutgunBulletActor::BeginPlay()
         shutgunInstance = *It;
         break; 
     }
-    
+
 	if (shutgunInstance)
 	{
 
@@ -122,36 +112,14 @@ void AShutgunBulletActor::PitchingRandom(float DeltaTime)
 
 void AShutgunBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    if (OtherActor->GetActorNameOrLabel().Contains("BP_Wall") || OtherActor->GetActorNameOrLabel().Contains("Cube") || OtherActor->GetActorNameOrLabel().Contains("Floor"))
+    if (OtherActor->GetActorNameOrLabel().Contains("BP_Wall") || OtherActor->GetActorNameOrLabel().Contains("Cube") || OtherActor->GetActorNameOrLabel().Contains("Floor")||OtherActor->GetActorNameOrLabel().Contains("BP_Hulk"))
     {
-  
         UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletExplosionPX, GetActorLocation(), GetActorRotation());
 
 
         UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletSplashPX, GetActorLocation(), GetActorRotation());
-
-        // 액터에 임펄스+@
-        UPrimitiveComponent* OtherPrimitiveComponent = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
-        if (OtherPrimitiveComponent && OtherPrimitiveComponent->IsSimulatingPhysics())
-        {
-            FVector ForwardVector = GetActorForwardVector();
-            FVector Impulse = ForwardVector * 100000.0f;  // 
-            OtherPrimitiveComponent->AddImpulse(Impulse, NAME_None, true);
-        }
-
-        
-        //
         Destroy();
     }
-
-    if (OtherActor->GetActorNameOrLabel().Contains("BP_Hulk"))
-    {
-        UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), bloodNA->GetAsset(), GetActorLocation(), GetActorRotation());
-        Destroy();
-    }
-    
-
-
 }
 
 

@@ -25,9 +25,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MySettings")
 	bool bHasShutgun = false;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MySettings")
-	bool bHasRifle = false;
-
 	
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MySettings", meta = (AllowPrivateAccess = "true"))
