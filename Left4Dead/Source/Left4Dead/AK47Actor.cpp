@@ -47,8 +47,6 @@ void AAK47Actor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	currentBulletCount = maxBulletCount;
-	currentMagazineCount = maxmagazineCount;
 }
 
 // Called every frame
@@ -60,40 +58,36 @@ void AAK47Actor::Tick(float DeltaTime)
 
 void AAK47Actor::FireRifle()
 {
-	if (currentBulletCount > 0)
+
+	if (FireAKAnimation)
 	{
-		currentBulletCount = currentBulletCount - 1;
-		if (FireAKAnimation)
-		{
-
-			ak47Mesh->PlayAnimation(FireAKAnimation, false);
-			UE_LOG(LogTemp, Warning, TEXT("Playing FireAKAnimation sequence"));
-		}
+		
+		ak47Mesh->PlayAnimation(FireAKAnimation, false); 
+		UE_LOG(LogTemp, Warning, TEXT("Playing FireAKAnimation sequence"));
+	}
 
 
 
-		UParticleSystemComponent* ParticleComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletParticle, sceneComp->GetComponentLocation(), sceneComp->GetComponentRotation());
-		if (ParticleComp)
-		{
-			ParticleComp->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
-		}
+	UParticleSystemComponent* ParticleComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletParticle, sceneComp->GetComponentLocation(), sceneComp->GetComponentRotation());
+	if (ParticleComp)
+	{
+		ParticleComp->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
+	}
 
 
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
+	
+	FVector SpawnLocation = sceneComp->GetComponentLocation();
 
-		FVector SpawnLocation = sceneComp->GetComponentLocation();
-
-		// 변환을 설정
-		FTransform spawnTrans;
-		spawnTrans.SetLocation(SpawnLocation);
-		spawnTrans.SetRotation(sceneComp->GetComponentQuat());
+	// 변환을 설정
+	FTransform spawnTrans;
+	spawnTrans.SetLocation(SpawnLocation);
+	spawnTrans.SetRotation(sceneComp->GetComponentQuat());
 
 		// 총알 스폰
-		ARifleBulletActor* bullet = GetWorld()->SpawnActor<ARifleBulletActor>(bulletActor, spawnTrans, SpawnParams);
-
-	}
+	ARifleBulletActor* bullet = GetWorld()->SpawnActor<ARifleBulletActor>(bulletActor, spawnTrans, SpawnParams);
 	
 }
 
@@ -104,13 +98,5 @@ void AAK47Actor::PlayReloadAS()
 		ak47Mesh->PlayAnimation(reloadAKAnimation, false);
 		
 	}
-	if (currentMagazineCount > 0)
-	{
-		currentBulletCount = maxBulletCount;
-	}
-
-	currentMagazineCount = currentMagazineCount - 1;
-
-	currentMagazineCount = FMath::Clamp(currentMagazineCount, 0, maxmagazineCount);
 }
 

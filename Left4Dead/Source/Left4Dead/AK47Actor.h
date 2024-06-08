@@ -50,17 +50,4 @@ public:
 	class UAnimSequence* reloadAKAnimation;
 
 	void PlayReloadAS();
-
-	// 譆渠識憲 偎熱
-	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
-	int32 maxBulletCount = 42;
-
-	// ⑷營識憲 偎熱
-	int32 currentBulletCount;
-
-	//譆渠驕璽偎熱
-	int32 maxmagazineCount = 20;
-
-	//⑷營 驕璽 偎熱
-	int32 currentMagazineCount;
 };

@@ -16,18 +16,18 @@ class LEFT4DEAD_API AGamePlayer : public ACharacter
 	GENERATED_BODY()
 
 public:
-
+	
 	AGamePlayer();
 
 protected:
-
+	
 	virtual void BeginPlay() override;
 
-public:
-
+public:	
+	
 	virtual void Tick(float DeltaTime) override;
 
-
+	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	/** Called for movement input */
@@ -85,9 +85,6 @@ public:
 	class UInputAction* iA_RifleReload;
 
 	UPROPERTY(EditDefaultsOnly, Category = MySettings)
-	class UInputAction* iA_ShutgunReload;
-
-	UPROPERTY(EditDefaultsOnly, Category = MySettings)
 	class UInputAction* iA_FireRifle;
 
 	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
@@ -122,11 +119,11 @@ public:
 	AActor* OwnedRifle;
 
 	// ÃÑÀ» ±â¾ïÇÏ°í½Í´Ù.
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	bool bHasShutgun;
 
 	// ÃÑÀ» ±â¾ïÇÏ°í½Í´Ù2.
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	bool bHasrifle;
 
 	UPROPERTY()
@@ -144,127 +141,11 @@ public:
 
 	void OnIARifleReload(const FInputActionValue& value);
 
-	void OnIAShutgunReload(const FInputActionValue& value);
-
 	void OnIAFireRifle(const FInputActionValue& value);
 
 	void AttachShutgun(AActor* ShutGun);
 
 	void AttachRifle(AActor* Rifle);
 
-	int32 playerMaxHP = 100;
-
-	int32 playerCurrentHP;
-
-	UPROPERTY(EditAnywhere, Category = "MySettings")
-	int32 dmg = 5;
-
-	UFUNCTION(BlueprintCallable)
-	void PlayerTakeDamage();
-
-	//void SetPlayerHP(int32 NewHP);
-
-	//uiÀÛ¾÷
-	UPROPERTY(EditAnywhere, Category = "MySettings")
-	class UPlayerWidget* playerWidget;
-
-	UPROPERTY(EditAnywhere, Category = "MySettings")
-	class UMainWidget* mainWidget;
-
-	void InitMainUI();
-
-	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
-	TSubclassOf<class UMainWidget> MainUIFactory;
-
-	UPROPERTY(Replicated,EditDefaultsOnly, Category = "MySettings")
-	class UAnimMontage* reloadMT;
-
-	UPROPERTY(Replicated)
-	FTimerHandle timerhandle_DoubleShotRifle;
-	UPROPERTY(Replicated)
-	FTimerHandle timerhandle_DoubleShotRifle2;
-	UPROPERTY(Replicated)
-	FTimerHandle timerhandle_ReloadFinisheShutgun;
-	UPROPERTY(Replicated)
-	FTimerHandle timerhandle_ReloadFinisheRifle;
-
-	void UpdateCurrentShutgunBullets();
-
-	void UpdateCurrentRifleBullets();
-
-	void CheckWork();
-
-	bool reloadShutgunAnimationPlayingNow = false;
-
-	bool reloadRifleAnimationPlayingNow = false;
-
-	class UPrimitiveComponent* CurrentShutgunInstance;
-
-	class UPrimitiveComponent* CurrentRifleInstance;
-
-
-
-	//³×Æ®¿öÅ© ÀÛ¾÷==========================================================================
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	//ÃÑÀâ±â S ====================================================
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_TakeShutgun();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiRPC_TakeShutgun(AActor* shutgunActor);
-
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_TakeRifle();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiRPC_TakeRifle(AActor* rifleActor);
-	//ÃÑÀâ±â E ====================================================
-
-	//ÃÑ³õ±â S ====================================================
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_ReleaseShutgun();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiRPC_ReleaseShutgun(AActor* shutgunActor);
-
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_ReleaseRifle();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiRPC_ReleaseRifle(AActor* rifleActor);
-	//ÃÑ³õ±â E ====================================================
-
-	//ÃÑ½î±â S ====================================================
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_FireShutgun();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiRPC_FireShutgun();
-
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_FireRifle();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiRPC_FireRifle();
-	//ÃÑ½î±â E ====================================================
-	// 
-	//ÃÑÀåÀü E ====================================================
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_ReloadShutgun();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiRPC_ReloadShutgun();
-
-	UFUNCTION(Server, Reliable)
-	void ServerRPC_ReloadRifle();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiRPC_ReloadRifle();
-
-	//ÃÑÀåÀü E ====================================================
-
-
-
+	
 };
