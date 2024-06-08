@@ -45,16 +45,22 @@ public:
 
 	// Ai 컨트롤러 관련
 	UPROPERTY()
-	class AAIController* ZombieController;
+	class AAIController* aicon;
 
 	UFUNCTION()
 	void PawnSeen(APawn* SeenActor);
+
+	UFUNCTION()
+	FORCEINLINE AActor* GetCurrentTarget() {return target;};
 
 	UPROPERTY(EditAnywhere, Category = "Mysettings" , BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	AActor* PatrolTarget;
 
 	UPROPERTY(VisibleAnywhere)
 	UPawnSensingComponent* PawnSensing;
+
+	UPROPERTY(EditAnywhere)
+	APlayerController* pcc;
 
 	
 
@@ -71,6 +77,9 @@ public:
 	FVector HitLocation;
 
 	FVector HitDirection;
+
+	/*FVector targetplayer1;
+	FVector targetplayer2;*/
 
 	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
 	float traceSpeed = 1000.0f;
@@ -91,6 +100,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mysettings")
 	FVector moveDirection;
 
+	/*UPROPERTY()
+	class AZombieAIController* aicon;*/
+	
+	/*UPROPERTY()
+	class APawn* PlayerPawn;*/
 
 	void CheckOwner();
 
@@ -107,7 +121,7 @@ private:
 	class APlayerController* players;
 
 	int32 currentHP = 0;
-	int32 MaxHP = 300;
+	int32 MaxHP = 30;
 
 	void Idle(float deltaSeconds);
 	void Move(float deltaSeconds);

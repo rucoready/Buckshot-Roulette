@@ -12,6 +12,9 @@
 #include "NavigationSystem.h"
 #include "Navigation/PathFollowingComponent.h"
 #include <../../../../../../../Source/Runtime/AIModule/Classes/Perception/PawnSensingComponent.h>
+#include "ZombieAIController.h"
+#include"Kismet/GameplayStatics.h"
+
 
 // Sets default values
 AHulkZombie::AHulkZombie()
@@ -28,17 +31,27 @@ AHulkZombie::AHulkZombie()
 	PawnSensing->LOSHearingThreshold = 200.f;
 	PawnSensing->SetPeripheralVisionAngle(27.f);
 
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	
+
 }	
 
 // Called when the game starts or when spawned
 void AHulkZombie::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	// 플레이어 0 번 가져오기
+	//APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
 	// 기본상태를 IDLE 상태로 초기화 한다.
 	enemystate = EEnemyState::IDLE;
 
+	auto* pc = GetWorld()->GetFirstPlayerController();
 
+	aicon = GetController<AAIController>();
 
 	for(TActorIterator<AGamePlayer> player(GetWorld()); player; ++player)
 	{
@@ -53,14 +66,18 @@ void AHulkZombie::BeginPlay()
 		hulkAnim->moveDirection = moveDirection;
 	}*/
 
-	ZombieController = Cast<AAIController>(GetController());
-	if(ZombieController && PatrolTarget)
+	//aicon = Cast<AZombieAIController>(GetController());
+
+	//PlayerPawn = Cast<APawn>(GetController());
+
+	//ZombieController = Cast<AAIController>(GetController());
+	if(aicon && PatrolTarget)
 	{
 		FAIMoveRequest MoveRequest;
 		MoveRequest.SetGoalActor(PatrolTarget);
 		MoveRequest.SetAcceptanceRadius(15.f);
 		FNavPathSharedPtr navPath;
-		ZombieController->MoveTo(MoveRequest, &navPath);
+		aicon->MoveTo(MoveRequest, &navPath);
 		TArray<FNavPathPoint>& Pathpoints = navPath->GetPathPoints();
 		for (auto& Point : Pathpoints)
 		{
@@ -68,6 +85,18 @@ void AHulkZombie::BeginPlay()
 			DrawDebugSphere(GetWorld(), Location, 12.f, 12, FColor::Green, false, 10.f);
 		}
 	}
+
+
+	//서버의 권한일경우
+	if (HasAuthority())
+	{
+		//이 액터가 네트워크 클라이언트에 복제할지 여부를 설정합니다.
+		SetReplicates(true);
+
+		//이 액터의 움직임이 네트워크 클라이언트에 복제되는지 여부를 설정합니다.
+		SetReplicateMovement(true);
+	}
+
 
 
 	currentHP = MaxHP;
@@ -78,6 +107,8 @@ void AHulkZombie::BeginPlay()
 void AHulkZombie::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+
 
 	switch (enemystate)
 	{
@@ -217,38 +248,71 @@ void AHulkZombie::Move(float deltaSeconds)
 	FVector targetDir = target->GetActorLocation() - GetActorLocation();
 	targetDir.Z = 0;
 
-	// 나 - 타겟의 거리가 공격가능범위 보다 크다면
-	if(targetDir.Length() > attackDistance)
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+	FVector targetplayer1 = PlayerPawn->GetActorLocation() - GetActorLocation();
+
+	////PlayerPawn = Cast<APawn>(GetController());
+	if (targetDir.Length() > attackDistance)
+	{ 
+	if (aicon != nullptr)
 	{
-		// 타겟을 따라감
-		GetCharacterMovement()->MaxWalkSpeed = traceSpeed;
-		AddMovementInput(targetDir.GetSafeNormal());
-	
-
-		// 이동방향으로 회전
-
-		FRotator currentRot = GetActorRotation();
-		FRotator targetRot = targetDir.ToOrientationRotator();
-
-		FRotator calcRot = FMath::Lerp(currentRot, targetRot, deltaSeconds * rotSpeed);
-
-		SetActorRotation(targetDir.ToOrientationRotator());
-		
+		aicon->MoveToActor(PlayerPawn, 200);
+		aicon->MoveToLocation(PlayerPawn->GetActorLocation(), 10);
 	}
 	else
-	{
-		enemystate = EEnemyState::ATTACKDELAY;
-		UE_LOG(LogTemp, Warning, TEXT("12222222"));
+		{
+			//aicon->StopMovement();
+			enemystate = EEnemyState::ATTACK;
+			UE_LOG(LogTemp, Warning, TEXT("12222222"));
+
+		}
 	}
+
+	 //나 - 타겟의 거리가 공격가능범위 보다 크다면
+	//if(targetDir.Length() > attackDistance)
+	//{
+	//	// 타겟을 따라감
+	//	GetCharacterMovement()->MaxWalkSpeed = traceSpeed;
+	//	AddMovementInput(targetDir.GetSafeNormal());
+	//	/*aicon->MoveToActor(PlayerPawn, 200);
+	//	aicon->MoveToLocation(PlayerPawn->GetActorLocation(), 20);*/
+
+	//	// 이동방향으로 회전
+
+	//	FRotator currentRot = GetActorRotation();
+	//	FRotator targetRot = targetDir.ToOrientationRotator();
+
+	//	FRotator calcRot = FMath::Lerp(currentRot, targetRot, deltaSeconds * rotSpeed);
+
+	//	SetActorRotation(targetplayer1.ToOrientationRotator());
+	//	
+	//}
+	//else
+	//{
+	//	enemystate = EEnemyState::ATTACKDELAY;
+	//	UE_LOG(LogTemp, Warning, TEXT("12222222"));
+	//}
 }
 
 
 
 void AHulkZombie::Attack()
 {
+
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if(FVector::Distance(GetActorLocation(), target->GetActorLocation()) < attackDistance + 15.0f)
 	{ 
 	UE_LOG(LogTemp, Warning, TEXT("attck player"));
+
+	
+	
+	/*GetCurrentTarget();
+	if(players != nullptr)
+	{
+		players->on
+	}
+	*/
 	enemystate = EEnemyState::ATTACKDELAY;
 	}
 	else
@@ -256,6 +320,7 @@ void AHulkZombie::Attack()
 		enemystate = EEnemyState::MOVE;
 		UE_LOG(LogTemp, Warning, TEXT("3333333"));
 		//*UEnum::GetValueAsString<EEnemyState>(enemystate)
+
 	}
 }
 
