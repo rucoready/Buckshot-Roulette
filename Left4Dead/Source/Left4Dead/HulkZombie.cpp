@@ -12,7 +12,6 @@
 #include "NavigationSystem.h"
 #include "Navigation/PathFollowingComponent.h"
 #include <../../../../../../../Source/Runtime/AIModule/Classes/Perception/PawnSensingComponent.h>
-#include "ZombieAIController.h"
 #include"Kismet/GameplayStatics.h"
 
 
