@@ -3,6 +3,9 @@
 
 #include "TubbiAnimInstance.h"
 #include "GamePlayer.h"
+#include "ShutGunActor.h"
+#include "AK47Actor.h"
+#include "MainWidget.h"
 
 void UTubbiAnimInstance::NativeInitializeAnimation()
 {
@@ -40,4 +43,9 @@ void UTubbiAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	PitchAngle = Me->GetBaseAimRotation().GetNormalized().Pitch;
 	// PitchAngle값을 -60 ~ 60 안에 가두고 싶다.
 	PitchAngle = FMath::Clamp(-PitchAngle, -60, 60);
+}
+
+void UTubbiAnimInstance::AnimNotify_RifleReload()
+{
+	
 }

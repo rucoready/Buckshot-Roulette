@@ -45,5 +45,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "MySettings")
 	float PitchAngle;
 
-	
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UMainWidget* mainWidget;
+
+	class AShutGunActor* shutgunInstance;
+
+	class AAK47Actor* rifleInstance;
+
+	UFUNCTION()
+	void AnimNotify_RifleReload();
 };

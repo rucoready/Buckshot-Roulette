@@ -42,5 +42,23 @@ public:
 
 	void FireShutGun();
 
+	void ReloadShutgun();
+
+	// ÃÖ´ëÃÑ¾Ë °¹¼ö
+	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
+	int32 maxBulletCount = 10;
+
+	// ÇöÀçÃÑ¾Ë °¹¼ö
+	int32 currentBulletCount;
+
+	//ÃÖ´ëÅºÃ¢°¹¼ö
+	int32 maxmagazineCount = 12;
+
+	//ÇöÀç ÅºÃ¢ °¹¼ö
+	int32 currentMagazineCount;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UMainWidget* mainWidget;
+
 	
 };
