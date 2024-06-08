@@ -6,6 +6,7 @@
 #include <../../../../../../../Source/Runtime/Engine/Classes/Components/SceneComponent.h>
 #include <../../../../../../../Source/Runtime/Engine/Public/EngineUtils.h>
 #include "ShutgunBulletActor.h"
+#include "MainWidget.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Particles/ParticleSystemComponent.h>
 
@@ -57,6 +58,8 @@ void AShutGunActor::BeginPlay()
 
 	}
 
+	currentBulletCount = maxBulletCount;
+	currentMagazineCount = maxmagazineCount;
 	//FireShutGun();
 }
 
@@ -69,30 +72,48 @@ void AShutGunActor::Tick(float DeltaTime)
 
 void AShutGunActor::FireShutGun()
 {
-	UParticleSystemComponent* ParticleComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletParticle, sceneComp->GetComponentLocation(), sceneComp->GetComponentRotation());
-	if (ParticleComp)
+	if (currentBulletCount > 0 )
 	{
-		ParticleComp->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
+		currentBulletCount = currentBulletCount - 1;
+		UParticleSystemComponent* ParticleComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletParticle, sceneComp->GetComponentLocation(), sceneComp->GetComponentRotation());
+		if (ParticleComp)
+		{
+			ParticleComp->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
+		}
+
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		for (int32 i = 0; i < 10; ++i)
+		{
+			FVector SpawnLocation = sceneComp->GetComponentLocation();
+
+			// 변환을 설정
+			FTransform spawnTrans;
+			spawnTrans.SetLocation(SpawnLocation);
+			spawnTrans.SetRotation(sceneComp->GetComponentQuat());
+
+			// 총알 스폰
+			AShutgunBulletActor* bullet = GetWorld()->SpawnActor<AShutgunBulletActor>(bulletActor, spawnTrans, SpawnParams);
+		}
 	}
 	
 
-    FActorSpawnParameters SpawnParams;
-    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-    for (int32 i = 0; i < 10; ++i)
-    {
-        FVector SpawnLocation = sceneComp->GetComponentLocation();
-
-        // 변환을 설정
-        FTransform spawnTrans;
-        spawnTrans.SetLocation(SpawnLocation);
-        spawnTrans.SetRotation(sceneComp->GetComponentQuat());
-
-        // 총알 스폰
-        AShutgunBulletActor* bullet = GetWorld()->SpawnActor<AShutgunBulletActor>(bulletActor, spawnTrans, SpawnParams);
-    }
-
 	
+}
+
+void AShutGunActor::ReloadShutgun()
+{
+	if (currentMagazineCount > 0)
+	{
+		currentBulletCount = maxBulletCount;
+	}
+	
+	currentMagazineCount = currentMagazineCount - 1;
+
+	currentMagazineCount = FMath::Clamp(currentMagazineCount, 0, maxmagazineCount);
+
 }
 
 
