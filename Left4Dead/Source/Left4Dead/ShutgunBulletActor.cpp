@@ -125,7 +125,7 @@ void AShutgunBulletActor::PitchingRandom(float DeltaTime)
 
 void AShutgunBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    if (OtherActor->GetActorNameOrLabel().Contains("BP_Wall") || OtherActor->GetActorNameOrLabel().Contains("Cube") || OtherActor->GetActorNameOrLabel().Contains("Floor"))
+    if (OtherActor->GetActorNameOrLabel().Contains("SM")|| OtherActor->GetActorNameOrLabel().Contains("Wooden") || OtherActor->GetActorNameOrLabel().Contains("Ma")|| OtherActor->GetActorNameOrLabel().Contains("Cube") || OtherActor->GetActorNameOrLabel().Contains("Floor"))
     {
   
         
@@ -142,7 +142,10 @@ void AShutgunBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedC
             FVector Impulse = ForwardVector * 100000.0f;  // 
             OtherPrimitiveComponent->AddImpulse(Impulse, NAME_None, true);
         }
-
+        if (hitAnother)
+        {
+            UGameplayStatics::PlaySoundAtLocation(this, hitAnother, GetActorLocation());
+        }
 
         
         

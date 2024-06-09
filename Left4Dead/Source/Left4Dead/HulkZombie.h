@@ -121,7 +121,7 @@ public:
 	class APlayerController* players;
 
 	int32 currentHP = 0;
-	int32 MaxHP = 30;
+	int32 MaxHP = 300;
 
 	void Idle(float deltaSeconds);
 	void Move(float deltaSeconds);

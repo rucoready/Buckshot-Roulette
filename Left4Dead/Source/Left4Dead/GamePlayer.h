@@ -202,6 +202,18 @@ public:
 
 	class UPrimitiveComponent* CurrentRifleInstance;
 
+	UPROPERTY(EditAnywhere, Category="MySettings")
+	class USoundBase* ak3Fire;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* akPickUp;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* shutgunFire;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* emtyBullets;
+
 
 
 	//네트워크 작업==========================================================================

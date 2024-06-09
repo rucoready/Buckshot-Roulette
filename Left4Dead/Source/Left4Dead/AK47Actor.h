@@ -63,4 +63,6 @@ public:
 
 	//ÇöÀç ÅºÃ¢ °¹¼ö
 	int32 currentMagazineCount;
+
+	
 };

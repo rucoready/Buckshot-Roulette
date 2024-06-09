@@ -78,7 +78,7 @@ void ARifleBulletActor::FireBullts(float DeltaTime)
 
 void ARifleBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->GetActorNameOrLabel().Contains("BP_Wall") || OtherActor->GetActorNameOrLabel().Contains("Cube") || OtherActor->GetActorNameOrLabel().Contains("Floor"))
+	if (OtherActor->GetActorNameOrLabel().Contains("SM")|| OtherActor->GetActorNameOrLabel().Contains("Wooden") ||OtherActor->GetActorNameOrLabel().Contains("Ma")|| OtherActor->GetActorNameOrLabel().Contains("Cube") || OtherActor->GetActorNameOrLabel().Contains("Floor"))
 	{
 
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletExplosionPX, GetActorLocation(), GetActorRotation());
@@ -94,7 +94,10 @@ void ARifleBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedCom
 			FVector Impulse = ForwardVector * 100000.0f;  // 
 			OtherPrimitiveComponent->AddImpulse(Impulse, NAME_None, true);
 		}
-
+		if (hitAnother)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, hitAnother, GetActorLocation());
+		}
 
 		//
 		Destroy();
@@ -118,6 +121,8 @@ void ARifleBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedCom
 
 			hulkZombies->OnDamage();
 		}
+
+		
 		Destroy();
 
 	}

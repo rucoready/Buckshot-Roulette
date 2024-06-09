@@ -69,4 +69,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class AHulkZombie* hulkZombies;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* hitAnother;
 };

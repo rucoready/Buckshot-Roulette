@@ -301,6 +301,11 @@ void AGamePlayer::MultiRPC_TakeRifle_Implementation(AActor* rifleActor)
 {
 	// 손에 붙이고싶다.
 	AttachRifle(rifleActor);
+
+	if (akPickUp)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, akPickUp, GetActorLocation());
+	}
 }
 
 void AGamePlayer::ServerRPC_TakeShutgun_Implementation()
@@ -334,6 +339,11 @@ void AGamePlayer::MultiRPC_TakeShutgun_Implementation(AActor* shutgunActor)
 {
 	// 손에 붙이고싶다.
 	AttachShutgun(shutgunActor);
+
+	if (akPickUp)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, akPickUp, GetActorLocation());
+	}
 }
 
 void AGamePlayer::OnIATakeShutgun(const FInputActionValue& value)
@@ -532,6 +542,8 @@ void AGamePlayer::FireRifle()
 		rifleInstance->FireRifle();
 
 		mainWidget->UpdateTextNowBullts(rifleInstance->currentBulletCount);
+
+		
 	}
 
 
@@ -662,7 +674,21 @@ void AGamePlayer::MultiRPC_FireShutgun_Implementation()
 {
 	if (bHasShutgun)
 	{
-		FireShutgun();
+		if (shutgunInstance->currentBulletCount > 0)
+		{
+			FireShutgun();
+			if (shutgunFire)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, shutgunFire, GetActorLocation());
+			}
+		}
+		else
+		{
+			if (emtyBullets)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, emtyBullets, GetActorLocation());
+			}
+		}
 	}
 }
 
@@ -679,10 +705,26 @@ void AGamePlayer::MultiRPC_FireRifle_Implementation()
 {
 	if (bHasrifle)
 	{
-		FireRifle();
+		if (rifleInstance->currentBulletCount > 0)
+		{
+			FireRifle();
 
-		GetWorldTimerManager().SetTimer(timerhandle_DoubleShotRifle, this, &AGamePlayer::FireRifle, 0.1f, false);
-		GetWorldTimerManager().SetTimer(timerhandle_DoubleShotRifle2, this, &AGamePlayer::FireRifle, 0.2f, false);
+			GetWorldTimerManager().SetTimer(timerhandle_DoubleShotRifle, this, &AGamePlayer::FireRifle, 0.1f, false);
+			GetWorldTimerManager().SetTimer(timerhandle_DoubleShotRifle2, this, &AGamePlayer::FireRifle, 0.2f, false);
+
+			if (ak3Fire)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, ak3Fire, GetActorLocation());
+			}
+		}
+		else
+		{
+			if (emtyBullets)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, emtyBullets, GetActorLocation());
+			}
+		}
+		
 	}
 }
 

@@ -93,6 +93,7 @@ void AAK47Actor::FireRifle()
 		// ÃÑ¾Ë ½ºÆù
 		ARifleBulletActor* bullet = GetWorld()->SpawnActor<ARifleBulletActor>(bulletActor, spawnTrans, SpawnParams);
 
+		
 	}
 	
 }
