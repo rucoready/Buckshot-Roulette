@@ -96,25 +96,26 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
-private:
 
-		UPROPERTY()
-		class AActor* target;
 
-		UPROPERTY()
-		class APlayerController* players;
-		class APlayerController2* player2;
+	UPROPERTY()
+	class AActor* target;
 
-		int32 currentHP = 0;
-		int32 MaxHP = 30;
+	UPROPERTY()
+	class APlayerController* players;
+	class APlayerController2* player2;
 
-		void Idle(float deltaSeconds);
-		void Move(float deltaSeconds);
-		void Attack();
-		void PawnSen();
-		void Throw();
-		void AttackDelay(float deltaSeconds);
-		void OnDamage(int32 dmg, AActor* attacker);
-		void DamageProcess(float deltaSeconds);
-		void Die();
+	int32 currentHP = 0;
+	int32 MaxHP = 30;
+
+		
+	void Idle(float deltaSeconds);
+	void Move(float deltaSeconds);
+	void Attack();
+	void PawnSen();
+	void Throw();
+	void AttackDelay(float deltaSeconds);
+	void OnDamage();
+	void DamageProcess(float deltaSeconds);
+	void Die();
 };

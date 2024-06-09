@@ -109,7 +109,7 @@ void AMyBasicZombie::Tick(float DeltaTime)
 		AttackDelay(DeltaTime);
 		break;
 	case ZombieState::DAMAGED:
-		OnDamage(currentHP, target);
+		OnDamage();
 		break;
 	case ZombieState::DAMAGEDS:
 		DamageProcess(DeltaTime);
@@ -120,7 +120,7 @@ void AMyBasicZombie::Tick(float DeltaTime)
 	default:
 		break;
 	}
-
+	UE_LOG(LogTemp, Warning, TEXT("ZombieCurrentHP : %d"), currentHP);
 }
 
 // Called to bind functionality to input
@@ -129,6 +129,8 @@ void AMyBasicZombie::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+
+
 
 void AMyBasicZombie::Idle(float deltaSeconds)
 {
@@ -241,7 +243,7 @@ void AMyBasicZombie::AttackDelay(float deltaSeconds)
 	}
 }
 
-void AMyBasicZombie::OnDamage(int32 dmg, AActor* attacker)
+void AMyBasicZombie::OnDamage()
 {
 	if (zombiestate == ZombieState::DAMAGED)
 	{
@@ -250,7 +252,8 @@ void AMyBasicZombie::OnDamage(int32 dmg, AActor* attacker)
 
 
 	// 현재 hp 값이 0 ~ max 값 사이에만 있을 수 있게 하기
-	currentHP -= FMath::Clamp(currentHP - dmg, 0, MaxHP);
+	//currentHP -= FMath::Clamp(currentHP - 5, 0, MaxHP);
+	currentHP = currentHP - 5;
 
 	// 데미지 계산 결과 현재 체력이 0 보다 크다면
 	if (currentHP > 0)

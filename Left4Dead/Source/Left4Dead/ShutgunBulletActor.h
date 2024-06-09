@@ -63,4 +63,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class UNiagaraComponent* bloodNA;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class AMyBasicZombie* basicZombies;
 };

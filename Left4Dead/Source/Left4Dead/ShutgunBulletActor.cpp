@@ -10,6 +10,8 @@
 #include "NiagaraComponent.h"
 #include <../../../../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Components/BoxComponent.h>
+#include "MyBasicZombie.h"
+
 
 // Sets default values
 AShutgunBulletActor::AShutgunBulletActor()
@@ -125,6 +127,7 @@ void AShutgunBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedC
     if (OtherActor->GetActorNameOrLabel().Contains("BP_Wall") || OtherActor->GetActorNameOrLabel().Contains("Cube") || OtherActor->GetActorNameOrLabel().Contains("Floor"))
     {
   
+        
         UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletExplosionPX, GetActorLocation(), GetActorRotation());
 
 
@@ -139,14 +142,24 @@ void AShutgunBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedC
             OtherPrimitiveComponent->AddImpulse(Impulse, NAME_None, true);
         }
 
+
         
-        //
+        
         Destroy();
     }
 
-    if (OtherActor->GetActorNameOrLabel().Contains("BP_Hulk") || OtherActor->GetActorNameOrLabel().Contains("BP_GamePlayer"))
+    if (OtherActor->GetActorNameOrLabel().Contains("BP_Hulk") || OtherActor->GetActorNameOrLabel().Contains("BP_BasicZombie") ||OtherActor->GetActorNameOrLabel().Contains("BP_BasicZombie2")|| OtherActor->GetActorNameOrLabel().Contains("BP_BasicpowerZombie"))
     {
         UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), bloodNA->GetAsset(), GetActorLocation(), GetActorRotation());
+        
+
+        basicZombies = Cast<AMyBasicZombie>(OtherActor);
+        if (basicZombies)
+        {
+            
+            basicZombies->OnDamage();
+        }
+
         Destroy();
     }
     

@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = MySettings)
 	class UParticleSystem* bulletSplashPX;
 
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class AMyBasicZombie* basicZombies;
+
 
     AAK47Actor* AK47Instance;
 
