@@ -130,7 +130,7 @@ void AHulkZombie::Tick(float DeltaTime)
 		AttackDelay(DeltaTime);
 		break;
 	case EEnemyState::DAMAGED:
-		OnDamage(currentHP, target);
+		OnDamage();
 		break;
 	case EEnemyState::DAMAGEDS:
 		DamageProcess(DeltaTime);
@@ -141,7 +141,7 @@ void AHulkZombie::Tick(float DeltaTime)
 	default:
 		break;
 	}
-
+	UE_LOG(LogTemp, Warning, TEXT("HulkCurrentHP : %d"), currentHP);
 }
 
 // Called to bind functionality to input
@@ -352,7 +352,7 @@ void AHulkZombie::AttackDelay(float deltaSeconds)
 	
 }
 
-void AHulkZombie::OnDamage(int32 dmg, AActor* attacker)
+void AHulkZombie::OnDamage()
 {
 	if(enemystate == EEnemyState::DAMAGED)
 	{
@@ -361,7 +361,7 @@ void AHulkZombie::OnDamage(int32 dmg, AActor* attacker)
 
 
 	// 현재 hp 값이 0 ~ max 값 사이에만 있을 수 있게 하기
-	currentHP -= FMath::Clamp(currentHP - dmg, 0, MaxHP);
+	currentHP = currentHP - 5;
 
 	// 데미지 계산 결과 현재 체력이 0 보다 크다면
 	if(currentHP > 0)

@@ -11,6 +11,7 @@
 #include <../../../../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Components/BoxComponent.h>
 #include "MyBasicZombie.h"
+#include "HulkZombie.h"
 
 
 // Sets default values
@@ -158,6 +159,13 @@ void AShutgunBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedC
         {
             
             basicZombies->OnDamage();
+        }
+
+        hulkZombies = Cast<AHulkZombie>(OtherActor);
+        if (hulkZombies)
+        {
+
+            hulkZombies->OnDamage();
         }
 
         Destroy();

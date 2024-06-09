@@ -9,6 +9,7 @@
 #include "AK47Actor.h"
 #include "NiagaraComponent.h"
 #include "MyBasicZombie.h"
+#include "HulkZombie.h"
 #include <../../../../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Components/BoxComponent.h>
 
@@ -109,6 +110,13 @@ void ARifleBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedCom
 		{
 			
 			basicZombies->OnDamage();
+		}
+
+		hulkZombies = Cast<AHulkZombie>(OtherActor);
+		if (hulkZombies)
+		{
+
+			hulkZombies->OnDamage();
 		}
 		Destroy();
 

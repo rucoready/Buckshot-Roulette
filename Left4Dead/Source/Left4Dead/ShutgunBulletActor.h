@@ -66,4 +66,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class AMyBasicZombie* basicZombies;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class AHulkZombie* hulkZombies;
 };

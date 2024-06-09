@@ -112,7 +112,7 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-private:
+
 
 	UPROPERTY() 
 	class AActor* target;
@@ -129,7 +129,7 @@ private:
 	void MoveAttack();
 	void Throw();
 	void AttackDelay(float deltaSeconds);
-	void OnDamage(int32 dmg, AActor* attacker);
+	void OnDamage();
 	void DamageProcess(float deltaSeconds);
 	void Die();
 
