@@ -50,8 +50,8 @@ public:
 	UFUNCTION()
 	void PawnSeen(APawn* SeenActor);
 
-	UFUNCTION()
-	FORCEINLINE AActor* GetCurrentTarget() {return target;};
+	/*UFUNCTION()
+	FORCEINLINE AActor* GetCurrentTarget() {return target;};*/
 
 	UPROPERTY(EditAnywhere, Category = "Mysettings" , BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	AActor* PatrolTarget;
@@ -62,7 +62,23 @@ public:
 	UPROPERTY(EditAnywhere)
 	APlayerController* pcc;
 
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UAnimMontage* death_montage;
+
+	UPROPERTY(EditAnywhere)
+	class AGamePlayer* players;
 	
+	// 공격 콜리전
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UBoxComponent* LeftAttack;
+
+	bool isattack = false;
+	
+
+
+	UFUNCTION()
+	void OnBeginOverlapRightattack(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 
 
 	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Mysettings")
@@ -77,6 +93,7 @@ public:
 	FVector HitLocation;
 
 	FVector HitDirection;
+	FVector targetLoc;
 
 	/*FVector targetplayer1;
 	FVector targetplayer2;*/
@@ -113,15 +130,35 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 
+	// 네트워크 방향 가까운거롤 받기
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mysettings")
+	//class ACharacter* target;
+
+
 
 	UPROPERTY() 
-	class AActor* target;
+	class AGamePlayer* target;
+	//float nearDistanceLength;
+	int32 nearsTargetIndex;
+	TArray<AGamePlayer*> targetList;
+	UPROPERTY()
+	class AGamePlayer* mytarget;
+	FTimerHandle delayTimer;
 
-	UPROPERTY() 
-	class APlayerController* players;
+	/*UPROPERTY()
+	class AHulkZombie* enemy;*/
 
+	int32 patrolPointNum = 0;
+	FVector randomPatrolPoint;
+	class UNavigationSystemV1* navSys;
+	UWorld* currentWorld;
+	float randomPatrolDelay = 3;
+
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
 	int32 currentHP = 0;
-	int32 MaxHP = 300;
+	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
+	int32 MaxHP = 30;
 
 	void Idle(float deltaSeconds);
 	void Move(float deltaSeconds);
@@ -132,6 +169,7 @@ public:
 	void OnDamage();
 	void DamageProcess(float deltaSeconds);
 	void Die();
+	void SearchPlayer();
 
 
 };

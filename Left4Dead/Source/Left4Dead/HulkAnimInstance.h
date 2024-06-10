@@ -20,6 +20,9 @@ public:
 		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mysettings")
 		class AHulkZombie* hulk;
 
+		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mysettings")
+		class AGamePlayer* player;
+
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mysettings")
 		EEnemyState currentState;
 
@@ -30,6 +33,13 @@ public:
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mysettings")
 		FVector moveDirection;
 
+		FTimerHandle deathTimer;
+
+		UFUNCTION()
+		void AnimNotify_Damage();
+
+		UFUNCTION()
+		void AnimNotify_Destroy();
 private:
 	
 };
