@@ -12,6 +12,7 @@
 #include "AK47Actor.h"
 #include "PlayerWidget.h"
 #include "MainWidget.h"
+#include "HeelKitActor.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/GameFramework/Character.h>
 #include <../../../../../../../Source/Runtime/Engine/Public/EngineUtils.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Animation/AnimMontage.h>
@@ -20,7 +21,7 @@
 // Sets default values
 AGamePlayer::AGamePlayer()
 {
-
+	
 	PrimaryActorTick.bCanEverTick = true;
 	//뚜비 메시를 적용
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>tubbiSkeletalMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Left4Dead/Assets/TubbiRig.TubbiRig'"));
@@ -55,7 +56,12 @@ AGamePlayer::AGamePlayer()
 	GunComp2->SetRelativeLocation(FVector(-0.283947, -0.355662, -0.039199));
 	GunComp2->SetRelativeRotation(FRotator(10.028709, -40.907579, -10.2645));
 
+	
+	heelKitComp = CreateDefaultSubobject<USceneComponent>(TEXT("heelKitComp"));
+	heelKitComp->SetupAttachment(GetMesh(), TEXT("LeftHandSocket"));
 
+	heelKitComp->SetRelativeLocation(FVector(-0.283947, -0.355662, -0.039199));
+	heelKitComp->SetRelativeRotation(FRotator(10.028709, -40.907579, -10.2645));
 }
 
 
@@ -63,6 +69,7 @@ void AGamePlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	
 	UE_LOG(LogTemp, Warning, TEXT("TestBeginPlay"));
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -80,17 +87,20 @@ void AGamePlayer::BeginPlay()
 
 	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AActor::StaticClass(), TEXT("Rifle"), rifleList);
 
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), AActor::StaticClass(), TEXT("HeelKit"), heelList);
+
 	playerCurrentHP = playerMaxHP;
 
-
+	
+	
 	InitMainUI();
-
-	//if (mainWidget)
-	//{
-		//if (IsLocallyControlled())
-		//{
+	//ServerRPC_ShowMainUI();
+	
+	
+	
 	mainWidget->SetActiveCurrentBullets(false);
 	mainWidget->SetActiveCurrentBullets2(false);
+	mainWidget->SetActiveCurrentHealKitCount(false);
 	//}	
 //}
 
@@ -102,7 +112,7 @@ void AGamePlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//UE_LOG(LogTemp, Warning, TEXT("PlayerCurrentHP : %d"), playerCurrentHP);
+	UE_LOG(LogTemp, Warning, TEXT("PlayerCurrentHP : %d"), playerCurrentHP);
 
 
 }
@@ -188,17 +198,131 @@ void AGamePlayer::AttachRifle(AActor* Rifle)
 	}
 }
 
+void AGamePlayer::AttachHeelKit(AActor* HeelKit)
+{
+	if (HeelKit)
+	{
+		// 인스턴스 설정
+		heelKitInstance = Cast<AHeelKitActor>(HeelKit);
+
+		//mainWidget->UpdateTextNowBullts(rifleInstance->currentBulletCount);
+		//mainWidget->UpdateTextBlock_EntireBullt(rifleInstance->maxmagazineCount);
+		//if (IsLocallyControlled())
+		//{
+		//	mainWidget->SetActiveCurrentBullets2(true);
+		//}
+
+		USkeletalMeshComponent* meshComp3 = HeelKit->GetComponentByClass<USkeletalMeshComponent>();
+
+		meshComp3->SetSimulatePhysics(false);
+
+		meshComp3->AttachToComponent(heelKitComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+
+	}
+}
+
+void AGamePlayer::KeepHeelKit()
+{
+	//
+ 	
+	//ServerRPC_KeepHeelKit();
+	
+	
+}
+
+void AGamePlayer::UseHeelKit()
+{
+	ServerRPC_UseHeelKit();
+	
+
+}
+
+void AGamePlayer::AddCurrentHealKit()
+{
+	
+	if (IsLocallyControlled() && mainWidget)
+	{
+		mainWidget->SetActiveCurrentHealKitCount(true);
+		currentHeelKitCount = currentHeelKitCount + 1;
+		mainWidget->UpdateCurrentHeelKit(currentHeelKitCount);
+	}
+	
+	
+	
+	
+	
+}
+
 //플레이어 데미지 입는함수
 void AGamePlayer::PlayerTakeDamage()
 {
 	//playerCurrentHP = playerCurrentHP - dmg;
 	//최대값은100 최소값은0
+	if (!bPainSoundCoolTime)
+	{
+		int32 Value = FMath::RandRange(1, 5);
+
+		if (Value == 1)
+		{
+			if (painSound1)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, painSound1, GetActorLocation());
+				bPainSoundCoolTime = true;
+			}
+		}
+		if (Value == 2)
+		{
+			if (painSound2)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, painSound2, GetActorLocation());
+				bPainSoundCoolTime = true;
+			}
+		}
+		if (Value == 3)
+		{
+			if (painSound3)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, painSound3, GetActorLocation());
+				bPainSoundCoolTime = true;
+			}
+		}
+		if (Value == 4)
+		{
+			if (painSound4)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, painSound4, GetActorLocation());
+				bPainSoundCoolTime = true;
+			}
+		}
+		if (Value == 5)
+		{
+			if (painSound5)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, painSound5, GetActorLocation());
+				bPainSoundCoolTime = true;
+			}
+		}
+		GetWorldTimerManager().SetTimer(timerhandle_CoolTimePainSound, this, &AGamePlayer::PainSoundCoolTimeReload, 1.0f, false);
+	}
+	
+
+	
+
 	playerCurrentHP = FMath::Clamp(playerCurrentHP - dmg, 0, 100);
 
 	mainWidget->WBP_PlayerWidget->UpdateTextHP(playerCurrentHP);
 	mainWidget->WBP_PlayerWidget->UpdateHPBar(playerCurrentHP);
 
 	UE_LOG(LogTemp, Warning, TEXT("PlayerTakeDamage"));
+}
+
+void AGamePlayer::PlayerHeel()
+{
+	playerCurrentHP = FMath::Clamp(playerCurrentHP + 30, 0, 100);
+
+	mainWidget->WBP_PlayerWidget->UpdateTextHP(playerCurrentHP);
+	mainWidget->WBP_PlayerWidget->UpdateHPBar(playerCurrentHP);
 }
 
 //void AGamePlayer::SetPlayerHP(int32 NewHP)
@@ -222,6 +346,8 @@ void AGamePlayer::InitMainUI()
 		}
 	}
 	mainWidget->WBP_PlayerWidget->UpdateTextHP(playerCurrentHP);
+
+	mainWidget->UpdateCurrentHeelKit(currentHeelKitCount);
 
 }
 
@@ -252,6 +378,16 @@ void AGamePlayer::CheckWork()
 	UE_LOG(LogTemp, Warning, TEXT("CheckOK"));
 }
 
+void AGamePlayer::EndShutgunCooltime()
+{
+	bShutgunCooltime = false;
+}
+
+void AGamePlayer::PainSoundCoolTimeReload()
+{
+	bPainSoundCoolTime = false;
+}
+
 void AGamePlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -261,6 +397,7 @@ void AGamePlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	DOREPLIFETIME(AGamePlayer, timerhandle_DoubleShotRifle);
 	DOREPLIFETIME(AGamePlayer, timerhandle_DoubleShotRifle2);
 	DOREPLIFETIME(AGamePlayer, reloadMT);
+	DOREPLIFETIME(AGamePlayer, currentHeelKitCount);
 
 
 
@@ -307,6 +444,49 @@ void AGamePlayer::MultiRPC_TakeRifle_Implementation(AActor* rifleActor)
 		UGameplayStatics::PlaySoundAtLocation(this, akPickUp, GetActorLocation());
 	}
 }
+
+
+void AGamePlayer::ServerRPC_TakeHeelKit_Implementation()
+{
+	
+	for (auto heelkit : heelList)
+	{
+		
+		if (heelkit->GetOwner() != nullptr)
+			continue;
+		// 거리 바깥이면(ShutGunSearchDist) 스킵
+		float dist = heelkit->GetDistanceTo(this);
+		if (dist > ShutGunSearchDist)
+			continue;
+
+		
+		OwnedHeelKit = heelkit;
+		// OwnedRifle의 오너를 나로 하고
+		OwnedHeelKit->SetOwner(this);
+		// bHasrifle을 true 하고싶다.
+		bHasHeelKit = true;
+
+
+		UE_LOG(LogTemp, Warning, TEXT("ListHeelKit"));
+
+		MultiRPC_TakeHeelKit(heelkit);
+		// 반복문을 종료하고싶다.
+		break;
+
+	}
+}
+
+void AGamePlayer::MultiRPC_TakeHeelKit_Implementation(AActor* heelKitActor)
+{
+	// 손에 붙이고싶다.
+	AttachHeelKit(heelKitActor);
+
+	if (akPickUp)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, akPickUp, GetActorLocation());
+	}
+}
+
 
 void AGamePlayer::ServerRPC_TakeShutgun_Implementation()
 {
@@ -393,6 +573,26 @@ void AGamePlayer::OnIATakeRifle(const FInputActionValue& value)
 
 }
 
+void AGamePlayer::OnIATakeHeelKit(const FInputActionValue& value)
+{
+	
+	if (bHasHeelKit)
+	{
+		// 이미 총을 잡고 있던 상태
+		// 놓기
+		ReleaseHeelKit();
+
+	}
+	else
+	{
+		// 안잡고 있던 상태
+		// 잡기
+		TakeHeelKit();
+		
+
+	}
+}
+
 //파이어샷건
 void AGamePlayer::OnIAFireShutgun(const FInputActionValue& value)
 {
@@ -469,6 +669,18 @@ void AGamePlayer::TakeRifle()
 
 }
 
+void AGamePlayer::TakeHeelKit()
+{
+	//힐킷잡고있으면 종료
+	if (bHasHeelKit)
+	{
+		return;
+	}
+	
+	ServerRPC_TakeHeelKit();
+
+}
+
 void AGamePlayer::ReleaseShutGun()
 {
 	// 	if (false == bHasShutgun)
@@ -485,6 +697,15 @@ void AGamePlayer::ReleaseRifle()
 		return;
 	}
 	ServerRPC_ReleaseRifle();
+}
+
+void AGamePlayer::ReleaseHeelKit()
+{
+	if (false == bHasHeelKit)
+	{
+		return;
+	}
+	ServerRPC_ReleaseHeelKit();
 }
 
 void AGamePlayer::DetachShutGun(AActor* shutgun)
@@ -513,12 +734,27 @@ void AGamePlayer::DetachRifle(AActor* rifle)
 		// 물리 켜고
 		meshComp2->SetSimulatePhysics(true);
 		// 디테치!!
-		meshComp2->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+		meshComp2->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 
 		mainWidget->SetActiveCurrentBullets2(false);
 	}
 
 
+}
+
+void AGamePlayer::DetachHeelKit(AActor* heelKit)
+{
+	// 메시 찾고
+	USkeletalMeshComponent* meshComp3 = heelKit->GetComponentByClass<USkeletalMeshComponent>();
+	if (meshComp3)
+	{
+		// 물리 켜고
+		meshComp3->SetSimulatePhysics(true);
+		// 디테치!!
+		meshComp3->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+
+		mainWidget->SetActiveCurrentBullets2(false);
+	}
 }
 
 void AGamePlayer::FireShutgun()
@@ -579,6 +815,8 @@ void AGamePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 		EnhancedInputComponent->BindAction(iA_TakeShutGun, ETriggerEvent::Started, this, &AGamePlayer::OnIATakeShutgun);
 		EnhancedInputComponent->BindAction(iA_Takerifle, ETriggerEvent::Started, this, &AGamePlayer::OnIATakeRifle);
+		EnhancedInputComponent->BindAction(iA_TakeHeelKit, ETriggerEvent::Started, this, &AGamePlayer::OnIATakeHeelKit);
+		EnhancedInputComponent->BindAction(iA_UseHeel, ETriggerEvent::Started, this, &AGamePlayer::UseHeelKit);
 
 
 		EnhancedInputComponent->BindAction(iA_FireShutgun, ETriggerEvent::Started, this, &AGamePlayer::OnIAFireShutgun);
@@ -586,6 +824,8 @@ void AGamePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 		EnhancedInputComponent->BindAction(iA_RifleReload, ETriggerEvent::Started, this, &AGamePlayer::OnIARifleReload);
 		EnhancedInputComponent->BindAction(iA_ShutgunReload, ETriggerEvent::Started, this, &AGamePlayer::OnIAShutgunReload);
+
+		EnhancedInputComponent->BindAction(iA_KeelHeelKit, ETriggerEvent::Started, this, &AGamePlayer::KeepHeelKit);
 
 	}
 
@@ -661,9 +901,31 @@ void AGamePlayer::MultiRPC_ReleaseRifle_Implementation(AActor* rifleActor)
 	}
 }
 
+void AGamePlayer::ServerRPC_ReleaseHeelKit_Implementation()
+{
+	if (OwnedHeelKit)
+	{
+		MultiRPC_ReleaseHeelKit(OwnedHeelKit);
+		bHasHeelKit = false;
+		OwnedHeelKit->SetOwner(nullptr);
+		OwnedHeelKit = nullptr;
+	}
+}
+
+void AGamePlayer::MultiRPC_ReleaseHeelKit_Implementation(AActor* heelkit)
+{
+	DetachHeelKit(heelkit);
+
+	//UI를 안보이게 하고싶다
+	//if (IsLocallyControlled() && mainWidget)
+	//{
+		mainWidget->SetActiveCurrentBullets2(false);
+	//}
+}
+
 void AGamePlayer::ServerRPC_FireShutgun_Implementation()
 {
-	if (bHasShutgun)
+	if (bHasShutgun && !bShutgunCooltime)
 	{
 		MultiRPC_FireShutgun();
 	}
@@ -674,13 +936,15 @@ void AGamePlayer::MultiRPC_FireShutgun_Implementation()
 {
 	if (bHasShutgun)
 	{
-		if (shutgunInstance->currentBulletCount > 0)
+		if (shutgunInstance->currentBulletCount > 0 &&!bShutgunCooltime)
 		{
 			FireShutgun();
 			if (shutgunFire)
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, shutgunFire, GetActorLocation());
 			}
+			bShutgunCooltime = true;
+			GetWorldTimerManager().SetTimer(timerhandle_CooltimeShutgun, this, &AGamePlayer::EndShutgunCooltime, 0.5f, false);
 		}
 		else
 		{
@@ -753,6 +1017,7 @@ void AGamePlayer::MultiRPC_ReloadShutgun_Implementation()
 {
 	reloadShutgunAnimationPlayingNow = true;
 	shutgunInstance->ReloadShutgun();
+	bShutgunCooltime = false;
 
 	GetWorldTimerManager().SetTimer(timerhandle_ReloadFinisheShutgun, this, &AGamePlayer::UpdateCurrentShutgunBullets, 2.5f, false);
 	if (shutgunInstance->currentMagazineCount > 0)
@@ -775,3 +1040,70 @@ void AGamePlayer::MultiRPC_ReloadRifle_Implementation()
 
 	}
 }
+
+
+
+
+
+
+
+void AGamePlayer::ServerRPC_ShowMainUI_Implementation()
+{
+	InitMainUI();
+	MultiRPC_ShowMainUI();
+}
+
+void AGamePlayer::MultiRPC_ShowMainUI_Implementation()
+{
+	InitMainUI();
+	if (IsLocallyControlled())
+	{
+		mainWidget->SetActiveCurrentHPBar(true);
+	}
+}
+
+void AGamePlayer::ServerRPC_KeepHeelKit_Implementation()
+{
+	MultiRPC_KeepHeelKit();
+
+}
+
+void AGamePlayer::MultiRPC_KeepHeelKit_Implementation()
+{
+	
+}
+
+void AGamePlayer::ServerRPC_UseHeelKit_Implementation()
+{
+	MultiRPC_UseHeelKit();
+	//mainWidget->SetActiveCurrentBullets2(true);
+}
+
+void AGamePlayer::MultiRPC_UseHeelKit_Implementation()
+{
+	if (IsLocallyControlled())
+	{
+		if (currentHeelKitCount > 0)
+		{
+			if (useHeelKit)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, useHeelKit, GetActorLocation());
+
+			}
+		}
+		
+		
+		if (currentHeelKitCount > 0)
+		{
+			playerCurrentHP = FMath::Clamp(playerCurrentHP + 30, 0, playerMaxHP);
+		}
+		currentHeelKitCount = FMath::Clamp(currentHeelKitCount - 1, 0, 50);
+		mainWidget->UpdateCurrentHeelKit(currentHeelKitCount);
+		mainWidget->WBP_PlayerWidget->UpdateTextHP(playerCurrentHP);
+		mainWidget->WBP_PlayerWidget->UpdateHPBar(playerCurrentHP);
+		mainWidget->SetActiveCurrentBullets2(true);
+	}
+	
+}
+
+

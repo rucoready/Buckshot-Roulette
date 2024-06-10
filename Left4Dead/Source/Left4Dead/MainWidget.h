@@ -39,8 +39,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
 	class UImage* Image_CrossHair;
 
+	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	class UTextBlock* TextBlock_CurrentHeelKit;
+
 	UFUNCTION()
 	void UpdateTextNowBullts(int32 newBullt);
+
+	UFUNCTION()
+	void UpdateCurrentHeelKit(int32 newHeelKit);
 
 	UFUNCTION()
 	void UpdateTextBlock_EntireBullt(int32 magazine);
@@ -48,4 +54,10 @@ public:
 	void SetActiveCurrentBullets(bool value);
 
 	void SetActiveCurrentBullets2(bool value);
+
+	void SetActiveCurrentHPBar(bool value);
+
+	void SetActiveCurrentHealKitCount(bool value);
+
+	
 };

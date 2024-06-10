@@ -10,6 +10,7 @@
 #include "NiagaraComponent.h"
 #include "MyBasicZombie.h"
 #include "HulkZombie.h"
+#include "GamePlayer.h"
 #include <../../../../../../../Plugins/FX/Niagara/Source/Niagara/Public/NiagaraFunctionLibrary.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Components/BoxComponent.h>
 
@@ -103,7 +104,7 @@ void ARifleBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedCom
 		Destroy();
 	}
 
-	if (OtherActor->GetActorNameOrLabel().Contains("BP_Hulk") || OtherActor->GetActorNameOrLabel().Contains("BP_BasicZombie") || OtherActor->GetActorNameOrLabel().Contains("BP_BasicZombie2") || OtherActor->GetActorNameOrLabel().Contains("BP_BasicpowerZombie"))
+	if (OtherActor->GetActorNameOrLabel().Contains("BP_Hulk") || OtherActor->GetActorNameOrLabel().Contains("BP_BasicZombie") || OtherActor->GetActorNameOrLabel().Contains("BP_BasicZombie2") || OtherActor->GetActorNameOrLabel().Contains("BP_BasicpowerZombie")|| OtherActor->GetActorNameOrLabel().Contains("BP_GamePlayer"))
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), bloodNA->GetAsset(), GetActorLocation(), GetActorRotation());
 		
@@ -115,11 +116,11 @@ void ARifleBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedCom
 			basicZombies->OnDamage();
 		}
 
-		hulkZombies = Cast<AHulkZombie>(OtherActor);
-		if (hulkZombies)
+		gamePlayer = Cast<AGamePlayer>(OtherActor);
+		if (gamePlayer)
 		{
 
-			hulkZombies->OnDamage();
+			gamePlayer->PlayerTakeDamage();
 		}
 
 		

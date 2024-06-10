@@ -8,6 +8,7 @@
 #include "ShutgunBulletActor.h"
 #include "ShutGunActor.h"
 #include "AK47Actor.h"
+#include "HeelKitActor.h"
 #include "GamePlayer.generated.h"
 
 UCLASS()
@@ -39,13 +40,19 @@ public:
 
 	void TakeRifle();
 
+	void TakeHeelKit();
+
 	void ReleaseShutGun();
 
 	void ReleaseRifle();
 
+	void ReleaseHeelKit();
+
 	void DetachShutGun(AActor* shutgun);
 
 	void DetachRifle(AActor* rifle);
+
+	void DetachHeelKit(AActor* heelKit);
 
 	void FireShutgun();
 
@@ -57,6 +64,8 @@ public:
 	AShutGunActor* shutgunInstance;
 
 	AAK47Actor* rifleInstance;
+
+	AHeelKitActor* heelKitInstance;
 
 	class USkeletalMesh* tubbiMesh;
 
@@ -72,6 +81,15 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
 	class UInputAction* iA_Takerifle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
+	class UInputAction* iA_TakeHeelKit;
+
+	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
+	class UInputAction* iA_KeelHeelKit;
+
+	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
+	class UInputAction* iA_UseHeel;
 
 	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
 	class UAnimMontage* shutgunMT;
@@ -111,6 +129,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
 	class USceneComponent* GunComp2;
 
+	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
+	class USceneComponent* heelKitComp;
+
 	// ÃÑÀ» °Ë»öÇÏ°í½Í´Ù.
 	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
 	float ShutGunSearchDist = 200;
@@ -121,6 +142,9 @@ public:
 	UPROPERTY()
 	AActor* OwnedRifle;
 
+	UPROPERTY()
+	AActor* OwnedHeelKit;
+
 	// ÃÑÀ» ±â¾ïÇÏ°í½Í´Ù.
 	UPROPERTY(Replicated)
 	bool bHasShutgun;
@@ -129,16 +153,24 @@ public:
 	UPROPERTY(Replicated)
 	bool bHasrifle;
 
+	UPROPERTY(Replicated)
+	bool bHasHeelKit;
+
 	UPROPERTY()
 	TArray<AActor*> shoutgunList;
 
 	UPROPERTY()
 	TArray<AActor*> rifleList;
 
+	UPROPERTY()
+	TArray<AActor*> heelList;
+
 
 	void OnIATakeShutgun(const FInputActionValue& value);
 
 	void OnIATakeRifle(const FInputActionValue& value);
+
+	void OnIATakeHeelKit(const FInputActionValue& value);      
 
 	void OnIAFireShutgun(const FInputActionValue& value);
 
@@ -152,15 +184,26 @@ public:
 
 	void AttachRifle(AActor* Rifle);
 
+	void AttachHeelKit(AActor* HeelKit);
+
+	void KeepHeelKit();
+
+	void UseHeelKit();
+
+	void AddCurrentHealKit();
+
 	int32 playerMaxHP = 100;
 
 	int32 playerCurrentHP;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
-	int32 dmg = 5;
+	int32 dmg = 2;
 
 	UFUNCTION(BlueprintCallable)
 	void PlayerTakeDamage();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayerHeel();
 
 	//void SetPlayerHP(int32 NewHP);
 
@@ -188,12 +231,23 @@ public:
 	UPROPERTY(Replicated)
 	FTimerHandle timerhandle_ReloadFinisheRifle;
 
+	UPROPERTY(Replicated)
+	FTimerHandle timerhandle_CoolTimePainSound;
+
 	void UpdateCurrentShutgunBullets();
 
 	void UpdateCurrentRifleBullets();
 
 	void CheckWork();
+	///////////////¼¦°ÇÄðÅ¸ÀÓ
+	bool bShutgunCooltime = false;
 
+	void EndShutgunCooltime();
+
+	UPROPERTY(Replicated)
+	FTimerHandle timerhandle_CooltimeShutgun;
+
+	/////////////////////////
 	bool reloadShutgunAnimationPlayingNow = false;
 
 	bool reloadRifleAnimationPlayingNow = false;
@@ -214,6 +268,33 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class USoundBase* emtyBullets;
 
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* painSound1;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* painSound2;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* painSound3;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* painSound4;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* painSound5;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* useHeelKit;
+
+	bool bPainSoundCoolTime = false;
+	
+	void PainSoundCoolTimeReload();
+
+	UPROPERTY(Replicated)
+	int32 currentHeelKitCount = 0;
+
+
+
 
 
 	//³×Æ®¿öÅ© ÀÛ¾÷==========================================================================
@@ -232,6 +313,12 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_TakeRifle(AActor* rifleActor);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_TakeHeelKit();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_TakeHeelKit(AActor* heelKitActor);
 	//ÃÑÀâ±â E ====================================================
 
 	//ÃÑ³õ±â S ====================================================
@@ -246,6 +333,12 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiRPC_ReleaseRifle(AActor* rifleActor);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ReleaseHeelKit();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_ReleaseHeelKit(AActor* heelKit);
 	//ÃÑ³õ±â E ====================================================
 
 	//ÃÑ½î±â S ====================================================
@@ -276,7 +369,30 @@ public:
 	void MultiRPC_ReloadRifle();
 
 	//ÃÑÀåÀü E ====================================================
+	//UI S ====================================================
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ShowMainUI();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_ShowMainUI();
+
+	//ÈúÅ¶Åµ ====================================================
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_KeepHeelKit();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_KeepHeelKit();
+
+	//ÈúÅ¶À¯Áî
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_UseHeelKit();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_UseHeelKit();
+
+	
 
 
 };

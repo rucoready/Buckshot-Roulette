@@ -72,4 +72,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class USoundBase* hitAnother;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class AGamePlayer* gamePlayer;
 };

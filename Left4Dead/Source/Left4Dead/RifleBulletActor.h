@@ -45,6 +45,9 @@ public:
 	class AHulkZombie* hulkZombies;
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class AGamePlayer* gamePlayer;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class USoundBase* hitAnother;
 
 	

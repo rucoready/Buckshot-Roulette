@@ -21,6 +21,14 @@ void UMainWidget::UpdateTextNowBullts(int32 newBullt)
 	}
 }
 
+void UMainWidget::UpdateCurrentHeelKit(int32 newHeelKit)
+{
+	if (TextBlock_CurrentHeelKit)
+	{
+		TextBlock_CurrentHeelKit->SetText(FText::FromString(FString::FromInt(newHeelKit)));
+	}
+}
+
 void UMainWidget::UpdateTextBlock_EntireBullt(int32 magazine)
 {
 	if (TextBlock_EntireBullt)
@@ -41,6 +49,12 @@ void UMainWidget::SetActiveCurrentBullets(bool value)
 	Image_ShotgunBullt->SetVisibility(value ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 
 	Image_CrossHair->SetVisibility(value ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+
+	WBP_PlayerWidget->SetVisibility(value ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+
+	//TextBlock_CurrentHeelKit->SetVisibility(value ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+
+	
 }
 
 void UMainWidget::SetActiveCurrentBullets2(bool value)
@@ -54,4 +68,18 @@ void UMainWidget::SetActiveCurrentBullets2(bool value)
 	Image_ak47->SetVisibility(value ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 
 	Image_CrossHair->SetVisibility(value ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+
+	WBP_PlayerWidget->SetVisibility(value ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+
+	
+}
+
+void UMainWidget::SetActiveCurrentHPBar(bool value)
+{
+	WBP_PlayerWidget->SetVisibility(value ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+}
+
+void UMainWidget::SetActiveCurrentHealKitCount(bool value)
+{
+	TextBlock_CurrentHeelKit->SetVisibility(value ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }

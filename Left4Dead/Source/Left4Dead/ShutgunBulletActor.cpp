@@ -12,6 +12,7 @@
 #include <../../../../../../../Source/Runtime/Engine/Classes/Components/BoxComponent.h>
 #include "MyBasicZombie.h"
 #include "HulkZombie.h"
+#include "GamePlayer.h"
 
 
 // Sets default values
@@ -152,7 +153,7 @@ void AShutgunBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedC
         Destroy();
     }
 
-    if (OtherActor->GetActorNameOrLabel().Contains("BP_Hulk") || OtherActor->GetActorNameOrLabel().Contains("BP_BasicZombie") ||OtherActor->GetActorNameOrLabel().Contains("BP_BasicZombie2")|| OtherActor->GetActorNameOrLabel().Contains("BP_BasicpowerZombie"))
+    if (OtherActor->GetActorNameOrLabel().Contains("BP_Hulk") || OtherActor->GetActorNameOrLabel().Contains("BP_BasicZombie") ||OtherActor->GetActorNameOrLabel().Contains("BP_BasicZombie2")|| OtherActor->GetActorNameOrLabel().Contains("BP_BasicpowerZombie")|| OtherActor->GetActorNameOrLabel().Contains("BP_GamePlayer"))
     {
         UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), bloodNA->GetAsset(), GetActorLocation(), GetActorRotation());
         
@@ -171,6 +172,12 @@ void AShutgunBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedC
             hulkZombies->OnDamage();
         }
 
+        gamePlayer = Cast<AGamePlayer>(OtherActor);
+        if (gamePlayer)
+        {
+
+            gamePlayer->PlayerTakeDamage();
+        }
         Destroy();
     }
     
