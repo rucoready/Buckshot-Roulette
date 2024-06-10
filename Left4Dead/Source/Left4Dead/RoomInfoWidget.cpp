@@ -29,8 +29,9 @@ void URoomInfoWidget::SetUP(const struct FSessionInfo& info)
 
 	Text_HostName->SetText(FText::FromString(info.hostName));
 
-	Text_UserName->SetText(FText::FromString(info.userName));
+	//Text_UserName->SetText(FText::FromString(info.userName));
 	Text_UserName->SetText(FText::GetEmpty());
+
 	FString count = FString::Printf(TEXT("(%d%d)"), info.currentplayercount, info.MaxplayerCount);
 	Text_PlayerCount->SetText(FText::FromString(count));
 

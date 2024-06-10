@@ -36,8 +36,8 @@ struct FSessionInfo
 	FORCEINLINE	void Set( int32 _index, const FOnlineSessionSearchResult& item){
 		index = _index;
 		 
-		item.Session.SessionSettings.Get(FName("ROOM_NAME"), roomName);
-		item.Session.SessionSettings.Get(FName("HOST_NAME"), hostName);
+		//item.Session.SessionSettings.Get(FName("ROOM_NAME"), roomName);
+		//item.Session.SessionSettings.Get(FName("HOST_NAME"), hostName);
 
 		userName = item.Session.OwningUserName; // 방장의 이름
 
@@ -71,6 +71,8 @@ class LEFT4DEAD_API ULeftNetGameInstance : public UGameInstance
 
 		FSessionSearchDelegate OnMySessionSearchCompleteDelegate;
 
+		//FSessioinSearchFinishedDelegate OnMySessioinSearchFinishedDelegate;
+
 	// 방 생성 요청 기능
 
 	// 방생성 요청 기능
@@ -86,7 +88,7 @@ class LEFT4DEAD_API ULeftNetGameInstance : public UGameInstance
 	TSharedPtr<FOnlineSessionSearch> sessioinSearch;// TSharedPtr 말고 *포인터로 하면 언리얼엔진에서 스마트 포인터로 확인안해줌
 	void FindOtherSessions();
 
-	UFUNCTION()
+
 	void OnFindSessionsComplete(bool bWasSuccessful);
 
 	//방에 조인하고 싶다.
@@ -101,6 +103,6 @@ class LEFT4DEAD_API ULeftNetGameInstance : public UGameInstance
 
 
 
-	void OnJoinSessionCompleted(FName Sessionname, EOnJoinSessionCompleteResult::Type Result);
+	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type results);
 	
 };

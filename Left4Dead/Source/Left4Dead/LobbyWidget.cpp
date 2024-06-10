@@ -18,6 +18,9 @@ void ULobbyWidget::NativeConstruct()
 {
 	gi = Cast<ULeftNetGameInstance>(GetWorld()->GetGameInstance());
 
+	// gi의 OnMySessionSearchCompleteDelegate에 AddRoomInfoUI를 연결하고싶다.
+	gi->OnMySessionSearchCompleteDelegate.AddDynamic(this, &ULobbyWidget::AddRoomInfoUI);
+
 	Button_SinglePlay->OnClicked.AddDynamic(this, &ULobbyWidget::OnMySingleClick);
 	Button_MultiPlay->OnClicked.AddDynamic(this, &ULobbyWidget::OnMyMultiClick);
 	Button_End->OnClicked.AddDynamic(this, &ULobbyWidget::OnMyEndClick);
@@ -71,7 +74,14 @@ void ULobbyWidget::OnMyclickCreatRoom()
 
 void ULobbyWidget::OnMyclickFindRoom()
 {
+	
 	SwitcherUI->SetActiveWidgetIndex(3);
+
+	// 방찾기 메뉴 진입 시 방찾기 시도
+	if(gi)
+	{
+		gi->FindOtherSessions();
+	}
 }
 
 void ULobbyWidget::OnMyclickBACKmain()
@@ -106,6 +116,7 @@ void ULobbyWidget::OnMyclickRoom()
 
 	void ULobbyWidget::OnMyclickGoFindRoom()
 	{
+		ScrollBox_123->ClearChildren();
 		// gi의 FindOtherSessions을 호출하고 싶다
 		gi->FindOtherSessions();
 	}
@@ -125,6 +136,7 @@ void ULobbyWidget::OnMyclickRoom()
 
 		// ScrollBox_RoomList 에 붙이고 싶다.
 		ScrollBox_123->AddChild(ui);
+		UE_LOG(LogTemp,Warning,TEXT("12341231241231241231241231224"));
 	}
 
 
