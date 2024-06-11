@@ -221,7 +221,7 @@ void AMyBasicZombie::Tick(float DeltaTime)
 			}), 10.0f, false);
 	}*/
 	//SearchPlayer();
-	PrintNetInfo();
+	//PrintNetInfo();
 }
 
 // Called to bind functionality to input
@@ -304,7 +304,7 @@ void AMyBasicZombie::Move(float deltaSeconds)
 			{
 				for (int32 i = 0; i < paths.Num() - 1; i++)
 				{
-					DrawDebugLine(currentWorld, paths[i] + FVector(0, 0, 80), paths[i + 1] + FVector(0, 0, 80), FColor::Red, false, 0, 0, 2);
+					//DrawDebugLine(currentWorld, paths[i] + FVector(0, 0, 80), paths[i + 1] + FVector(0, 0, 80), FColor::Red, false, 0, 0, 2);
 				}
 			}
 		}
