@@ -33,23 +33,64 @@ public:
 	AMyBasicZombie();
 
 	// Ai 컨트롤러 관련
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Mysettings")
+	ZombieState zombiestate = ZombieState::IDLE;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
+
+	// Ai 컨트롤러 관련
 	UPROPERTY()
-	class AAIController* aicon;
+	class AbasicZomController* aicon;
 
 	UFUNCTION()
 	void PawnSeen(APawn* SeenActor);
+
+	/*UFUNCTION()
+	FORCEINLINE AActor* GetCurrentTarget() {return target;};*/
 
 	UPROPERTY(EditAnywhere, Category = "Mysettings", BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	AActor* PatrolTarget;
 
 	UPROPERTY(VisibleAnywhere)
-	UPawnSensingComponent* PawnSensings;
+	UPawnSensingComponent* PawnSensing;
 
 	UPROPERTY(EditAnywhere)
 	APlayerController* pcc;
 
-	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Mysettings")
-	ZombieState zombiestate = ZombieState::IDLE;
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UAnimMontage* death_montage;
+
+	UPROPERTY(EditAnywhere)
+	class AGamePlayer* players;
+
+	// 공격 콜리전
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class UBoxComponent* LeftAttack;
+
+	bool isattack = false;
+
+
+	//드로우 디버그
+	void PrintNetInfo();
+
+	UFUNCTION()
+	void OnBeginOverlapRightattack(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+
+
 
 
 	float currentTime;
@@ -61,6 +102,10 @@ public:
 	FVector HitLocation;
 
 	FVector HitDirection;
+	FVector targetLoc;
+
+	/*FVector targetplayer1;
+	FVector targetplayer2;*/
 
 	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
 	float traceSpeed = 1000.0f;
@@ -74,40 +119,75 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
 	float sightAngle = 30.0f;
 
+
+	UPROPERTY()
+	class UBasicZomAnimInstance* ZomAnim;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mysettings")
 	FVector moveDirection;
 
+	/*UPROPERTY()
+	class AZombieAIController* aicon;*/
 
-	/*void CheckOwner();
+	/*UPROPERTY()
+	class APawn* PlayerPawn;*/
 
-	float CheckDst = 200.0f;*/
+	
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	float CheckDst = 200.0f;
 
 
 
+	// 네트워크 방향 가까운거롤 받기
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mysettings")
+	//class ACharacter* target;
+
+
+
+
+	// 사운드
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* Searchplayersound;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* attacksound;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* idlesound;
 
 	UPROPERTY()
-	class AActor* target;
+	class AGamePlayer* target;
+	//float nearDistanceLength;
+	//int32 nearTagetIndex;
+
+	TArray<AGamePlayer*> targetList;
 
 	UPROPERTY()
-	class APlayerController* players;
-	class APlayerController2* player2;
+	class AActor* mytarget;
 
+	FTimerHandle delayTimer;
+	bool bistarget = false;
+
+	/*UPROPERTY()
+	class AHulkZombie* enemy;*/
+
+	int32 patrolPointNum = 0;
+	FVector randomPatrolPoint;
+	class UNavigationSystemV1* navSys;
+	UWorld* currentWorld;
+	float randomPatrolDelay = 3;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
 	int32 currentHP = 0;
+	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
 	int32 MaxHP = 30;
 
+	bool bCoolTimeResearch = false;
+
+	FTimerHandle timerhandle_Research;
+
+	void ResetResearchCoolTime();
 		
 	void Idle(float deltaSeconds);
 	void Move(float deltaSeconds);
@@ -118,4 +198,5 @@ public:
 	void OnDamage();
 	void DamageProcess(float deltaSeconds);
 	void Die();
+	void SearchPlayer();
 };

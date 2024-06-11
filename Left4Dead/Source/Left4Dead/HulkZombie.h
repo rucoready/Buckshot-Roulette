@@ -43,6 +43,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Mysettings")
+	EEnemyState enemystate = EEnemyState::IDLE;
+
 	// Ai 컨트롤러 관련
 	UPROPERTY()
 	class AAIController* aicon;
@@ -75,14 +78,15 @@ public:
 	bool isattack = false;
 	
 
+	//드로우 디버그
+	void PrintNetInfo();
 
 	UFUNCTION()
 	void OnBeginOverlapRightattack(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 
 
-	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Mysettings")
-	EEnemyState enemystate = EEnemyState::IDLE;
+	
 
 	float currentTime;
 
@@ -136,14 +140,29 @@ public:
 
 
 
+
+	// 사운드
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* Searchplayersound;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* attacksound;
+
+	UPROPERTY(EditAnywhere, Category = "MySettings")
+	class USoundBase* idlesound;
+
 	UPROPERTY() 
 	class AGamePlayer* target;
 	//float nearDistanceLength;
-	int32 nearsTargetIndex;
+	//int32 nearTagetIndex;
+
 	TArray<AGamePlayer*> targetList;
+
 	UPROPERTY()
-	class AGamePlayer* mytarget;
+	class AActor* mytarget;
+
 	FTimerHandle delayTimer;
+	bool bistarget = false;
 
 	/*UPROPERTY()
 	class AHulkZombie* enemy;*/
@@ -159,6 +178,12 @@ public:
 	int32 currentHP = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
 	int32 MaxHP = 30;
+
+	bool bCoolTimeResearch = false;
+
+	FTimerHandle timerhandle_Research;
+
+	void ResetResearchCoolTime();
 
 	void Idle(float deltaSeconds);
 	void Move(float deltaSeconds);

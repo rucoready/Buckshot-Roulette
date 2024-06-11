@@ -22,3 +22,22 @@ void UBasicZomAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		zombState = Zombie->zombiestate;
 	}
 }
+
+void UBasicZomAnimInstance::AnimNotify_Damage()
+{
+	if (Zombie != nullptr)
+	{
+		Zombie->isattack = true;
+		//hulk->LeftAttack->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	}
+}
+
+void UBasicZomAnimInstance::AnimNotify_Destroy()
+{
+	if (Zombie != nullptr && !GetWorld()->GetTimerManager().IsTimerActive(deathTimer))
+	{
+		GetWorld()->GetTimerManager().SetTimer(deathTimer, FTimerDelegate::CreateLambda([&]() {
+			Zombie->Destroy();
+			}), 5.0f, false);
+	}
+}

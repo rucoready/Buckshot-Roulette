@@ -26,12 +26,23 @@ public:
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mysettings")
 		ZombieState zombState;
 
+		UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mysettings")
+		class AGamePlayer* player;
+
 		virtual void NativeInitializeAnimation() override;
 
 		virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mysettings")
 		FVector moveDirection;
+
+		FTimerHandle deathTimer;
+
+		UFUNCTION()
+		void AnimNotify_Damage();
+
+		UFUNCTION()
+		void AnimNotify_Destroy();
 
 private:
 	

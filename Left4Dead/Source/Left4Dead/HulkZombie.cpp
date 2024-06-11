@@ -51,6 +51,11 @@ void AHulkZombie::BeginPlay()
 {
 	Super::BeginPlay();
 	
+
+	
+
+
+
 	//enemy = GetOwner<AHulkZombie>();
 	// 플레이어 0 번 가져오기
 	//APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
@@ -135,6 +140,23 @@ void AHulkZombie::BeginPlay()
 	float nearDistanceLength = nearDistance.Size();*/
 }
 
+void AHulkZombie::PrintNetInfo()
+{
+	// localRole
+	FString localRole = UEnum::GetValueAsString(GetLocalRole());
+	// remoteRole
+	FString remoteRole = UEnum::GetValueAsString(GetRemoteRole());
+	// owner
+	FString owner = GetOwner() ? GetOwner()->GetName() : "";
+	// netConn
+	FString netConn = GetNetConnection() ? "Valid" : "Invalid";
+
+	FString str = FString::Printf(TEXT("localRole : %s\nremoteRole : %s\nowner : %s\nnetConn : %s"), *localRole, *remoteRole, *owner, *netConn);
+
+	FVector loc = GetActorLocation() + FVector(0, 0, 50);
+	DrawDebugString(GetWorld(), loc, str, nullptr, FColor::White, 0, true);
+}
+
 // Called every frame
 void AHulkZombie::Tick(float DeltaTime)
 {
@@ -181,22 +203,23 @@ void AHulkZombie::Tick(float DeltaTime)
 	if (!isattack)
 	{ 
 		LeftAttack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		UE_LOG(LogTemp, Warning, TEXT("11111111111111111"));
+		//UE_LOG(LogTemp, Warning, TEXT("11111111111111111"));
 	}
 	else
 	{
 		LeftAttack->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		UE_LOG(LogTemp, Warning, TEXT("22222222222222222222"));
+		//UE_LOG(LogTemp, Warning, TEXT("22222222222222222222"));
 	}
 
-	if(!GetWorld()->GetTimerManager().IsTimerActive(delayTimer))
+	/*if(!GetWorld()->GetTimerManager().IsTimerActive(delayTimer))
 	{
 			
 			GetWorld()->GetTimerManager().SetTimer(delayTimer, FTimerDelegate::CreateLambda([&]() {
 			SearchPlayer();
 			}), 10.0f, false);
-	}
+	}*/
 	//SearchPlayer();
+	PrintNetInfo();
 }
 
 // Called to bind functionality to input
@@ -266,15 +289,37 @@ void AHulkZombie::CheckOwner()
 }
 
 
+void AHulkZombie::ResetResearchCoolTime()
+{
+	bCoolTimeResearch = false;
+}
+
 void AHulkZombie::Idle(float deltaSeconds)
 {
-	SearchPlayer();
+	/*if(bistarget)
+	{
+		currentTime = 0;
+		currentTime+=deltaSeconds;
+	}
+	else
+	{
+		currentTime = 10;
+		SearchPlayer();
+	}*/
+	if(!bCoolTimeResearch)
+	{
+		SearchPlayer();
+		bCoolTimeResearch = true;
+		GetWorldTimerManager().SetTimer(timerhandle_Research, this, &AHulkZombie::ResetResearchCoolTime, 10.0f, false);
+	}
+	////
+	
 	
 	//1. 찾을 플레이어가 7미터 범위 이내인지 확인
 	float targetDistance = FVector::Distance(mytarget->GetActorLocation(), GetActorLocation());
 
 
-	// 찾은 플레이어가 전방 좌우로 30도 이내에 있는 지 확인
+	 //찾은 플레이어가 전방 좌우로 30도 이내에 있는 지 확인
 	FVector forwardVec = GetActorForwardVector();
 	FVector directionVec = (mytarget->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 
@@ -298,35 +343,35 @@ void AHulkZombie::Idle(float deltaSeconds)
 	
 	
 	
-	currentTime += deltaSeconds;
-	if(currentTime > 5.0f)
-	{
-		currentTime = 0;
-		enemystate = EEnemyState::MOVE;
-		UE_LOG(LogTemp, Warning, TEXT("111111111"));
-	}
+	//currentTime += deltaSeconds;
+	//if(currentTime > 5.0f)
+	//{
+	//	currentTime = 0;
+	//	enemystate = EEnemyState::MOVE;
+	//	UE_LOG(LogTemp, Warning, TEXT("111111111"));
+	//}
 
-	if (currentTime > randomPatrolDelay)
-	{
-		enemystate = EEnemyState::MOVE;
-		currentTime = 0;
+	//if (currentTime > randomPatrolDelay)
+	//{
+	//	enemystate = EEnemyState::MOVE;
+	//	currentTime = 0;
 
-		// 반경 3미터 이내의 랜덤 위치를 뽑는다.
-		//FVector2D randVec = FMath::RandPointInCircle(400);
-		//randomPatrolPoint = FVector(randVec.X, randVec.Y, 88.0f);
-		if (navSys != nullptr)
-		{
-			FNavLocation navLocation;
-			if (navSys->GetRandomReachablePointInRadius(GetActorLocation(), 300, navLocation))
-			{
-				randomPatrolPoint = navLocation.Location;
-			}
-		}
-	}
-	else
-	{
-		currentTime += deltaSeconds;
-	}
+	//	// 반경 3미터 이내의 랜덤 위치를 뽑는다.
+	//	//FVector2D randVec = FMath::RandPointInCircle(400);
+	//	//randomPatrolPoint = FVector(randVec.X, randVec.Y, 88.0f);
+	//	if (navSys != nullptr)
+	//	{
+	//		FNavLocation navLocation;
+	//		if (navSys->GetRandomReachablePointInRadius(GetActorLocation(), 300, navLocation))
+	//		{
+	//			randomPatrolPoint = navLocation.Location;
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//	currentTime += deltaSeconds;
+	//}
 
 
 
@@ -345,7 +390,7 @@ void AHulkZombie::SearchPlayer()
 
 
 	
-	int32 nearTagetInstance = 0;
+	int32 nearTagetIndex = 0;
 	if(targetList.Num() > 0)
 	{
 		FVector targetDistance;
@@ -358,16 +403,17 @@ void AHulkZombie::SearchPlayer()
 			if(targetDistanceLength < nearDistanceLength)
 			{
 				targetDistanceLength = nearDistanceLength;
-				nearsTargetIndex = i;
+				nearTagetIndex = i;
 			}
 		}
 	}
 
 	// 가장 가까운 플레이어를 타겟을 설정
-	mytarget = targetList[nearsTargetIndex];
-	if(aicon)
-	aicon->MoveToActor(mytarget, 70.0f);
-	enemystate = EEnemyState::MOVE;(mytarget);
+	mytarget = targetList[nearTagetIndex];
+	//UGameplayStatics::PlaySoundAtLocation(this, Searchplayersound, GetActorLocation());
+	//if(aicon)
+	//aicon->MoveToActor(mytarget, 70.0f);
+	//enemystate = EEnemyState::MOVE;
 
 	/*FTimerHandle delayTimer;
 	GetWorld()->GetTimerManager().SetTimer(delayTimer, FTimerDelegate::CreateLambda([&]() {
@@ -381,7 +427,7 @@ void AHulkZombie::Move(float deltaSeconds)
 {
 	// 방향
 
-	SearchPlayer();
+	//SearchPlayer();
 
 	//if (targetDir.Length() > attackDistance)
 	if (FVector::Distance(mytarget->GetActorLocation(), GetActorLocation()) > attackDistance)
@@ -408,7 +454,7 @@ void AHulkZombie::Move(float deltaSeconds)
 	}
 	else
 	{
-		aicon->StopMovement();
+		//aicon->StopMovement();
 		enemystate = EEnemyState::ATTACK;
 		//UE_LOG(LogTemp, Warning, TEXT("State Transition: %s"), *StaticEnum<EEnemyState>()->GetValueAsString(enemyState));
 	}
@@ -445,7 +491,7 @@ void AHulkZombie::Move(float deltaSeconds)
 void AHulkZombie::Attack()
 {
 
-	SearchPlayer();
+	//SearchPlayer();
 
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if(FVector::Distance(GetActorLocation(), mytarget->GetActorLocation()) < attackDistance + 40.0f)
@@ -458,9 +504,9 @@ void AHulkZombie::Attack()
 	}
 	else
 	{
-		aicon->MoveToActor(mytarget);
+		//aicon->MoveToActor(mytarget);
 		//LeftAttack2->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-		enemystate = EEnemyState::MOVE;
+ 		enemystate = EEnemyState::MOVE;
 		UE_LOG(LogTemp, Warning, TEXT("3333333"));
 		//*UEnum::GetValueAsString<EEnemyState>(enemystate)
 
@@ -480,7 +526,7 @@ void AHulkZombie::Throw()
 
 void AHulkZombie::AttackDelay(float deltaSeconds)
 {
-	SearchPlayer();
+	//SearchPlayer();
 	//// 타겟이 이미 사망 상태일 경우 즉시 Return 상태로 전환한다.
 	//if (Cast<AGamePlayer>(target)->tpsPlayerState == EPlayerState::DEATH)
 	//{
@@ -500,7 +546,7 @@ void AHulkZombie::AttackDelay(float deltaSeconds)
 	{
 		if (currentTime > attackDelayTime * 0.65f)
 		{
-			aicon->MoveToActor(mytarget, 10);
+			//aicon->MoveToActor(mytarget);
 			enemystate = EEnemyState::MOVE;
 		}
 	}
@@ -539,7 +585,7 @@ void AHulkZombie::DamageProcess(float deltaSeconds)
 	currentTime += deltaSeconds;
 	if (currentTime > 1.0f)
 	{
-		aicon->MoveToActor(mytarget);
+		//aicon->MoveToActor(mytarget);
 		enemystate = EEnemyState::MOVE;
 		return;
 	}
@@ -555,7 +601,7 @@ void AHulkZombie::DamageProcess(float deltaSeconds)
 	}
 	else
 	{
-		aicon->MoveToActor(mytarget);
+		//aicon->MoveToActor(mytarget);
 		enemystate = EEnemyState::MOVE;
 	}
 

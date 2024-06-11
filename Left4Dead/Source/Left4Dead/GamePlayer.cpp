@@ -1101,7 +1101,7 @@ void AGamePlayer::MultiRPC_UseHeelKit_Implementation()
 		mainWidget->UpdateCurrentHeelKit(currentHeelKitCount);
 		mainWidget->WBP_PlayerWidget->UpdateTextHP(playerCurrentHP);
 		mainWidget->WBP_PlayerWidget->UpdateHPBar(playerCurrentHP);
-		mainWidget->SetActiveCurrentBullets2(true);
+		//mainWidget->SetActiveCurrentBullets2(true);
 	}
 	
 }
