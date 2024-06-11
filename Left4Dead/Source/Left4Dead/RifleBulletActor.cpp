@@ -88,13 +88,13 @@ void ARifleBulletActor::OnBeginOverlapBullets(UPrimitiveComponent* OverlappedCom
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletSplashPX, GetActorLocation(), GetActorRotation());
 
 		// 액터에 임펄스+@
-		UPrimitiveComponent* OtherPrimitiveComponent = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
-		if (OtherPrimitiveComponent && OtherPrimitiveComponent->IsSimulatingPhysics())
-		{
-			FVector ForwardVector = GetActorForwardVector();
-			FVector Impulse = ForwardVector * 100000.0f;  // 
-			OtherPrimitiveComponent->AddImpulse(Impulse, NAME_None, true);
-		}
+		//UPrimitiveComponent* OtherPrimitiveComponent = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
+		//if (OtherPrimitiveComponent && OtherPrimitiveComponent->IsSimulatingPhysics())
+		////{
+		//	FVector ForwardVector = GetActorForwardVector();
+		//	FVector Impulse = ForwardVector * 100000.0f;  // 
+		//	OtherPrimitiveComponent->AddImpulse(Impulse, NAME_None, true);
+		//}
 		if (hitAnother)
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, hitAnother, GetActorLocation());
