@@ -81,7 +81,7 @@ public:
 	class UBoxComponent* LeftAttack;
 
 	bool isattack = false;
-
+	bool zombieDie = false;
 
 	//드로우 디버그
 	void PrintNetInfo();
@@ -154,6 +154,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class USoundBase* idlesound;
+
+	
 
 	UPROPERTY()
 	class AGamePlayer* target;

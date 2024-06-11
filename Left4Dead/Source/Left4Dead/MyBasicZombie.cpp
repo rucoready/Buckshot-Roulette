@@ -271,6 +271,7 @@ void AMyBasicZombie::Idle(float deltaSeconds)
 	if (targetDistance < sightDistance && cosTheta > 0 && theta_degree < sightAngle)
 	{
 		zombiestate = ZombieState::MOVE;
+		UGameplayStatics::PlaySoundAtLocation(this, idlesound, GetActorLocation());
 	}
 
 
@@ -308,6 +309,7 @@ void AMyBasicZombie::Move(float deltaSeconds)
 		if (aicon != nullptr)
 		{
 			aicon->MoveToLocation(mytarget->GetActorLocation(), 5, true);
+			UE_LOG(LogTemp, Warning, TEXT("target move"));
 		}
 	}
 	else
@@ -321,9 +323,10 @@ void AMyBasicZombie::Move(float deltaSeconds)
 void AMyBasicZombie::Attack()
 {
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (FVector::Distance(GetActorLocation(), mytarget->GetActorLocation()) < attackDistance + 40.0f)
+	if (FVector::Distance(GetActorLocation(), mytarget->GetActorLocation()) < attackDistance + 30.0f)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("attck player"));
+		UGameplayStatics::PlaySoundAtLocation(this, attacksound, GetActorLocation());
 		//OnBeginOverlapRightattack();
 		//LeftAttack2->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 
@@ -388,6 +391,7 @@ void AMyBasicZombie::OnDamage()
 	else // 데미지 결과 체력이 0 이라면
 	{
 		zombiestate = ZombieState::DIE;
+		UE_LOG(LogTemp, Warning, TEXT("OnDamage2"));
 		Die();
 	}
 }
@@ -416,20 +420,27 @@ void AMyBasicZombie::DamageProcess(float deltaSeconds)
 	{
 		//aicon->MoveToActor(mytarget);
 		zombiestate = ZombieState::MOVE;
+
 	}
 }
 
 void AMyBasicZombie::Die()
 {
-	FTimerHandle deadHandle;
-	GetWorldTimerManager().SetTimer(deadHandle, FTimerDelegate::CreateLambda([&]() {Destroy(); }), 3.0f, false);
+	if (!zombieDie)
+	{
+		FTimerHandle deadHandle;
+		GetWorldTimerManager().SetTimer(deadHandle, FTimerDelegate::CreateLambda([&]() {Destroy(); }), 10.0f, false);
 
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	GetCharacterMovement()->DisableMovement();
-	FString sectionName = FString("Dead");
-	// 섹션 이름을 이용해서 몽타주를 플레이한다.
-	PlayAnimMontage(death_montage, 1, FName(sectionName));
+		GetCharacterMovement()->DisableMovement();
+		FString sectionName = FString("Dead");
+		// 섹션 이름을 이용해서 몽타주를 플레이한다.
+
+		PlayAnimMontage(death_montage);
+		zombieDie = true;
+	}
+	
 }
 
 void AMyBasicZombie::SearchPlayer()

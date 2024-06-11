@@ -54,7 +54,7 @@ void AHulkZombie::BeginPlay()
 
 	
 
-
+	UGameplayStatics::PlaySoundAtLocation(this, Searchplayersound, GetActorLocation());
 
 	//enemy = GetOwner<AHulkZombie>();
 	// 플레이어 0 번 가져오기
@@ -410,7 +410,7 @@ void AHulkZombie::SearchPlayer()
 
 	// 가장 가까운 플레이어를 타겟을 설정
 	mytarget = targetList[nearTagetIndex];
-	//UGameplayStatics::PlaySoundAtLocation(this, Searchplayersound, GetActorLocation());
+	
 	//if(aicon)
 	//aicon->MoveToActor(mytarget, 70.0f);
 	//enemystate = EEnemyState::MOVE;

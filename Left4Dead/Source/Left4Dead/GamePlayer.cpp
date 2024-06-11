@@ -112,7 +112,7 @@ void AGamePlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UE_LOG(LogTemp, Warning, TEXT("PlayerCurrentHP : %d"), playerCurrentHP);
+	//UE_LOG(LogTemp, Warning, TEXT("PlayerCurrentHP : %d"), playerCurrentHP);
 
 
 }

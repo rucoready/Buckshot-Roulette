@@ -174,6 +174,7 @@ public:
 	float randomPatrolDelay = 3;
 
 	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
 	int32 currentHP = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
