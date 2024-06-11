@@ -214,16 +214,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "MySettings")
 	class UMainWidget* mainWidget;
 
-	UPROPERTY(EditAnywhere, Category = "MySettings")
-	class URespawnWidget* respawnWidget;
-
 	void InitMainUI();
 
 	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
 	TSubclassOf<class UMainWidget> MainUIFactory;
-
-	UPROPERTY(EditDefaultsOnly, Category = "MySettings")
-	TSubclassOf<class URespawnWidget> RespawnUIFactory;
 
 	UPROPERTY(Replicated,EditDefaultsOnly, Category = "MySettings")
 	class UAnimMontage* reloadMT;
