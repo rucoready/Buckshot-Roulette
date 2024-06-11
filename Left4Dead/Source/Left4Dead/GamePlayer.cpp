@@ -13,6 +13,8 @@
 #include "PlayerWidget.h"
 #include "MainWidget.h"
 #include "HeelKitActor.h"
+#include "RespawnWidget.h"
+#include "Components/SkeletalMeshComponent.h"
 #include <../../../../../../../Source/Runtime/Engine/Classes/GameFramework/Character.h>
 #include <../../../../../../../Source/Runtime/Engine/Public/EngineUtils.h>
 #include <../../../../../../../Source/Runtime/Engine/Classes/Animation/AnimMontage.h>
@@ -112,7 +114,7 @@ void AGamePlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//UE_LOG(LogTemp, Warning, TEXT("PlayerCurrentHP : %d"), playerCurrentHP);
+	UE_LOG(LogTemp, Warning, TEXT("PlayerCurrentHP : %d"), playerCurrentHP);
 
 
 }
@@ -306,7 +308,52 @@ void AGamePlayer::PlayerTakeDamage()
 		GetWorldTimerManager().SetTimer(timerhandle_CoolTimePainSound, this, &AGamePlayer::PainSoundCoolTimeReload, 1.0f, false);
 	}
 	
+	if (playerCurrentHP <= 0)
+	{
+		GetMesh()->SetSimulatePhysics(true);
+		GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+		if (shutgunInstance)
+		{
+			DetachShutGun(shutgunInstance);
+			shutgunInstance = nullptr;
+		}
+		if (rifleInstance)
+		{
+			DetachRifle(rifleInstance);
+			rifleInstance = nullptr;
+		}
 
+		if (IsLocallyControlled())
+		{
+			if (RespawnUIFactory)
+			{
+				
+				respawnWidget = CreateWidget<URespawnWidget>(GetWorld(), RespawnUIFactory);
+				if (respawnWidget)
+				{
+					respawnWidget->AddToViewport();
+					auto* pc = GetWorld()->GetFirstPlayerController();
+					pc->SetInputMode(FInputModeUIOnly());
+					pc->SetShowMouseCursor(true);
+					
+				}
+			}
+		}
+		
+
+		// 플레이어 컨트롤러 가져오기
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		if (PlayerController)
+		{
+			// 입력 비활성화
+			PlayerController->DisableInput(PlayerController);
+
+			
+			// 캐릭터 언포세스
+			//PlayerController->UnPossess();
+		}
+		
+	}
 	
 
 	playerCurrentHP = FMath::Clamp(playerCurrentHP - dmg, 0, 100);
@@ -398,6 +445,8 @@ void AGamePlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	DOREPLIFETIME(AGamePlayer, timerhandle_DoubleShotRifle2);
 	DOREPLIFETIME(AGamePlayer, reloadMT);
 	DOREPLIFETIME(AGamePlayer, currentHeelKitCount);
+	
+	
 
 
 

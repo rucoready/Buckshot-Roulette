@@ -28,4 +28,17 @@ protected:
 	virtual void BeginPlay() override;
 
 	// End Actor interface
+public:
+	UPROPERTY()
+	class ALeft4DeadGameMode* GM;
+
+	UPROPERTY()
+	class URespawnWidget* respawnUI;
+
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_RespawnPlayer();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ChangeSpectator();
 };
