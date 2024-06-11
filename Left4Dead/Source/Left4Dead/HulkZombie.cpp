@@ -219,7 +219,7 @@ void AHulkZombie::Tick(float DeltaTime)
 			}), 10.0f, false);
 	}*/
 	//SearchPlayer();
-	PrintNetInfo();
+	//PrintNetInfo();
 }
 
 // Called to bind functionality to input
@@ -306,14 +306,14 @@ void AHulkZombie::Idle(float deltaSeconds)
 		currentTime = 10;
 		SearchPlayer();
 	}*/
-	if(!bCoolTimeResearch)
-	{
-		SearchPlayer();
-		bCoolTimeResearch = true;
-		GetWorldTimerManager().SetTimer(timerhandle_Research, this, &AHulkZombie::ResetResearchCoolTime, 10.0f, false);
-	}
+	//if(!bCoolTimeResearch)
+	//{
+	//	SearchPlayer();
+	//	bCoolTimeResearch = true;
+	//	GetWorldTimerManager().SetTimer(timerhandle_Research, this, &AHulkZombie::ResetResearchCoolTime, 10.0f, false);
+	//}
 	////
-	
+	SearchPlayer();
 	
 	//1. 찾을 플레이어가 7미터 범위 이내인지 확인
 	float targetDistance = FVector::Distance(mytarget->GetActorLocation(), GetActorLocation());
@@ -379,6 +379,15 @@ void AHulkZombie::Idle(float deltaSeconds)
 
 void AHulkZombie::SearchPlayer()
 {
+	ServerRPC_hulkSerchPlayer_Implementation();
+
+}
+
+
+
+
+void AHulkZombie::ServerRPC_hulkSerchPlayer_Implementation()
+{
 	targetList.Empty();
 
 	for (TActorIterator<AGamePlayer> targets(GetWorld()); targets; ++targets)
@@ -389,39 +398,35 @@ void AHulkZombie::SearchPlayer()
 	float nearDistanceLength = nearDistance.Size();
 
 
-	
+
 	int32 nearTagetIndex = 0;
-	if(targetList.Num() > 0)
+	if (targetList.Num() > 0)
 	{
 		FVector targetDistance;
-	
-		for(int i = 1; i < targetList.Num(); i++)
+
+		for (int i = 1; i < targetList.Num(); i++)
 		{
 			targetDistance = targetList[i]->GetActorLocation() - GetActorLocation();
 			float targetDistanceLength = targetDistance.Size();
 
-			if(targetDistanceLength < nearDistanceLength)
+			if (targetDistanceLength < nearDistanceLength)
 			{
 				targetDistanceLength = nearDistanceLength;
 				nearTagetIndex = i;
 			}
 		}
+
 	}
-
-	// 가장 가까운 플레이어를 타겟을 설정
 	mytarget = targetList[nearTagetIndex];
-	
-	//if(aicon)
-	//aicon->MoveToActor(mytarget, 70.0f);
-	//enemystate = EEnemyState::MOVE;
-
-	/*FTimerHandle delayTimer;
-	GetWorld()->GetTimerManager().SetTimer(delayTimer, FTimerDelegate::CreateLambda([&]() {
-		SearchPlayer();
-		}), 10.0f, false);*/
-
+	if (mytarget == nullptr)
+	{
+		enemystate = EEnemyState::IDLE;
+	}
+	else
+	{
+		enemystate = EEnemyState::MOVE;
+	}
 }
-
 
 void AHulkZombie::Move(float deltaSeconds)
 {
@@ -535,7 +540,8 @@ void AHulkZombie::AttackDelay(float deltaSeconds)
 	//	return;
 	//}
 	
-
+	if (mytarget)
+	{ 
 	currentTime += deltaSeconds;
 	if(currentTime > attackDelayTime)
 	{
@@ -550,7 +556,7 @@ void AHulkZombie::AttackDelay(float deltaSeconds)
 			enemystate = EEnemyState::MOVE;
 		}
 	}
-	
+	}
 }
 
 void AHulkZombie::OnDamage()

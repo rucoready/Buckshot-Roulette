@@ -201,4 +201,7 @@ public:
 	void DamageProcess(float deltaSeconds);
 	void Die();
 	void SearchPlayer();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SerchPlayer();
 };

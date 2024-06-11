@@ -159,7 +159,7 @@ public:
 	TArray<AGamePlayer*> targetList;
 
 	UPROPERTY()
-	class AActor* mytarget;
+	class AGamePlayer* mytarget;
 
 	FTimerHandle delayTimer;
 	bool bistarget = false;
@@ -197,5 +197,6 @@ public:
 	void Die();
 	void SearchPlayer();
 
-
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_hulkSerchPlayer();
 };
