@@ -491,14 +491,14 @@ void AMyBasicZombie::ServerRPC_SerchPlayer_Implementation()
 
 	}
 	mytarget = targetList[nearTagetIndex];
-	if (mytarget == nullptr)
-	{
-		zombiestate = ZombieState::IDLE;
-	}
-	else
-	{
-		zombiestate = ZombieState::MOVE;
-	}
+	//if (mytarget == nullptr)
+	///*{
+	//	zombiestate = ZombieState::IDLE;
+	//}
+	//else
+	//{
+	//	zombiestate = ZombieState::MOVE;
+	//}*/
 }
 
 void AMyBasicZombie::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

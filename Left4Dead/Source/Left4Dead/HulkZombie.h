@@ -106,13 +106,13 @@ public:
 	float traceSpeed = 1000.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
-	float attackDistance = 170.0f;
+	float attackDistance = 230.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
-	float sightDistance = 700.0f;
+	float sightDistance = 1400.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Mysettings")
-	float sightAngle = 30.0f;
+	float sightAngle = 50.0f;
 
 
 	UPROPERTY()

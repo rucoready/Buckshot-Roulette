@@ -418,14 +418,14 @@ void AHulkZombie::ServerRPC_hulkSerchPlayer_Implementation()
 
 	}
 	mytarget = targetList[nearTagetIndex];
-	if (mytarget == nullptr)
+	/*if (mytarget == nullptr)
 	{
 		enemystate = EEnemyState::IDLE;
 	}
 	else
 	{
 		enemystate = EEnemyState::MOVE;
-	}
+	}*/
 }
 
 void AHulkZombie::Move(float deltaSeconds)
@@ -433,36 +433,39 @@ void AHulkZombie::Move(float deltaSeconds)
 	// 방향
 
 	//SearchPlayer();
-
-	//if (targetDir.Length() > attackDistance)
-	if (FVector::Distance(mytarget->GetActorLocation(), GetActorLocation()) > attackDistance)
+	if (mytarget)
 	{
-		// 타겟까지의 이동 경로를 시각화한다.
-		if (navSys != nullptr)
+		//if (targetDir.Length() > attackDistance)
+		if (FVector::Distance(mytarget->GetActorLocation(), GetActorLocation()) > attackDistance)
 		{
-			//UNavigationPath* calcPath = navSystem->FindPathToLocationSynchronously(currentWorld, GetActorLocation(), target->GetActorLocation());
-			UNavigationPath* calcPath = navSys->FindPathToActorSynchronously(currentWorld, GetActorLocation(), mytarget);
-			TArray<FVector> paths = calcPath->PathPoints;
-
-			if (paths.Num() > 1)
+			// 타겟까지의 이동 경로를 시각화한다.
+			if (navSys != nullptr)
 			{
-				for (int32 i = 0; i < paths.Num() - 1; i++)
+				//UNavigationPath* calcPath = navSystem->FindPathToLocationSynchronously(currentWorld, GetActorLocation(), target->GetActorLocation());
+				UNavigationPath* calcPath = navSys->FindPathToActorSynchronously(currentWorld, GetActorLocation(), mytarget);
+				TArray<FVector> paths = calcPath->PathPoints;
+
+				if (paths.Num() > 1)
 				{
-					//DrawDebugLine(currentWorld, paths[i] + FVector(0, 0, 80), paths[i + 1] + FVector(0, 0, 80), FColor::Red, false, 0, 0, 2);
+					for (int32 i = 0; i < paths.Num() - 1; i++)
+					{
+						//DrawDebugLine(currentWorld, paths[i] + FVector(0, 0, 80), paths[i + 1] + FVector(0, 0, 80), FColor::Red, false, 0, 0, 2);
+					}
 				}
 			}
+			if (aicon != nullptr)
+			{
+				aicon->MoveToLocation(mytarget->GetActorLocation(), 5, true);
+			}
 		}
-		if (aicon != nullptr)
+		else
 		{
-			aicon->MoveToLocation(mytarget->GetActorLocation(), 5, true);
+			//aicon->StopMovement();
+			enemystate = EEnemyState::ATTACK;
+			//UE_LOG(LogTemp, Warning, TEXT("State Transition: %s"), *StaticEnum<EEnemyState>()->GetValueAsString(enemyState));
 		}
 	}
-	else
-	{
-		//aicon->StopMovement();
-		enemystate = EEnemyState::ATTACK;
-		//UE_LOG(LogTemp, Warning, TEXT("State Transition: %s"), *StaticEnum<EEnemyState>()->GetValueAsString(enemyState));
-	}
+	
 
 
 	 //나 - 타겟의 거리가 공격가능범위 보다 크다면
